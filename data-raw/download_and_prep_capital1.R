@@ -104,7 +104,7 @@ for (chapter in lpad(1:33)) {
 
   # combine text
   full_text[[chapter_name]] <- main_text
-  full_toc <- c(full_toc, chapter_name, toc_text)
+  full_toc <- c(full_toc, pretty_Bchapter_name, toc_text)
   full_fn[[chapter_name]]  <- fn_text[!credit_idx]
   full_credits <-  c(full_credits, fn_text[credit_idx])
 }
