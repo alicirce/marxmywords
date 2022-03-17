@@ -1,5 +1,5 @@
 
-# marxmywords
+# marxmywords <img src="man/figures/marxsticker_small.png" align="right"/>
 
 Capital, or Das Kapital, published in 1867 by Karl Marx, is one of the most 
 important economic texts of the 19th century. This package makes it 
