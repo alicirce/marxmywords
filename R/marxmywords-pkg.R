@@ -4,4 +4,5 @@
 #' formatted to be convenient for text analysis.
 #' @docType package
 #' @name marxmywords
+#' @importFrom utils packageName
 NULL

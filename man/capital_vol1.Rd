@@ -10,7 +10,7 @@ A named list, containing:
 \item{toc}{Table of Contents: a character vector}
 \item{body}{Main text, named list, separated by chapter}
 \item{footnotes}{Footnotes, named list, separated by chapter}
-\item{credits}{credits, character}
+\item{credits}{credits, a character vector of length 1}
 }
 }
 \source{
@@ -21,8 +21,9 @@ capital_vol1
 }
 \description{
 This version of Capital was taken from the Marx/Engels Internet Archive
-(marxists.org), which was based on the first English edition (1887)
-translated by Samuel Moore and Edward Aveling, edited by Frederick Engels.
+(marxists.org), which was based on the first English edition (1887),
+translated by Samuel Moore and Edward Aveling, and edited by Frederick
+Engels.
 }
 \details{
 To facilitate analysis and locating of footnotes (don't skip the footnotes

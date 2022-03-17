@@ -8,6 +8,8 @@
 #' @export
 
 capital_vol1_book <- function() {
+  capital_vol1 <- getExportedValue(getNamespace(packageName()), "capital_vol1")
+
   fn_unnested <- unlist(
     lapply(
       names(capital_vol1$footnotes),

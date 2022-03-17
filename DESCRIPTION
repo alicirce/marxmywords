@@ -9,12 +9,11 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
-Imports: 
-    dplyr,
-    rvest
 Depends: 
     R (>= 2.10)
 LazyData: true
 Suggests: 
+    dplyr,
+    rvest,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
