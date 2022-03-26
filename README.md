@@ -10,7 +10,7 @@ available for text analysis in R!
 You can install the development version of marxmywords like so:
 
 ``` r
-devtools::install("marxmywords/marxmywords")
+devtools::install("alicirce/marxmywords")
 ```
 
 ## Example
@@ -20,31 +20,38 @@ peek at the table of contents:
 
 ``` r
 library(marxmywords)
-capital_vol1[["toc"]]
+library(dplyr)
+capital_vol1 %>%
+  filter(section == "toc")
 ```
 
-This object is a named list comprised of different sections of the book. To
-combine them into a single character vector, we can do the following:
+This object is a dataframe. The text itself is stored in the column `text`,
+the other columns indicate which section, part and chapter the text came from. 
+Read more about the structure and source of this data frame in the package 
+documentation:
 
+```r
+help(capital_vol1)
+```
+
+If you'd like to print it out to a text file to read as a book, there is a
+convenience function:
 ``` r
 book <- capital_vol1_book()
-```
-
-You can save it as a txt file or other format:
-
-``` r
 writeLines(book, "capital_vol1.txt")
 ```
 
 Or you can count the number of occurrences of a word:
 
 ``` r
-vapply(
-  capital_vol1[["body"]],
-  function(x) {
-    sum(lengths(regmatches(tolower(x), gregexpr("linen", tolower(x)))))
-  },
-  numeric(1)
+sum(
+  vapply(
+    capital_vol1[["text"]],
+    function(x) {
+      sum(lengths(regmatches(tolower(x), gregexpr("linen", tolower(x)))))
+    },
+    numeric(1),
+    USE.NAMES = FALSE
+  )
 )
 ```
-
