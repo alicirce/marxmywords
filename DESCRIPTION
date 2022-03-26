@@ -2,7 +2,7 @@ Package: marxmywords
 Title: Capital vol 1 in an analysis-ready format
 Version: 0.0.0.1
 Authors@R: 
-    person("First", "Last", ,"first.last@example.com", role = c("aut", "cre"))
+    person("Circe", "Malone", ,"circemalone@gmail.com", role = c("aut", "cre"))
 Description: Analysis-ready text for Capital Vol 1
 License: MIT + file LICENSE
 Encoding: UTF-8
