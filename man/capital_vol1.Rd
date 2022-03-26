@@ -5,12 +5,19 @@
 \alias{capital_vol1}
 \title{Capital, Volume I, by Karl Marx (1867)}
 \format{
-A named list, containing:
+A data frame, containing four columns:
 \describe{
-\item{toc}{Table of Contents: a character vector}
-\item{body}{Main text, named list, separated by chapter}
-\item{footnotes}{Footnotes, named list, separated by chapter}
-\item{credits}{credits, a character vector of length 1}
+\item{section}{
+Section of book, one of:
+"toc" (Table of Contents),
+"body" (main text),
+"footnotes" (footnotes),
+"credits" (list of transcribers and HTML markup contributors)
+}
+\item{part}{Part of text; the main text is divided into 8 parts}
+\item{chapter}{Chapter of text: the main text is divided into 33 chapters}
+\item{text}{Text, usually about one paragraph or footnote per row. (This
+depends on how the HTML markup was done.)}
 }
 }
 \source{
@@ -26,8 +33,9 @@ translated by Samuel Moore and Edward Aveling, and edited by Frederick
 Engels.
 }
 \details{
-To facilitate analysis and locating of footnotes (don't skip the footnotes
-on a read!), the main text and footnotes are provided as named lists, with
-the names taking the form "Chapter_01" to "Chapter_33".
+The text is stored as a data frame with four columns. The main text is
+included in the "body" section, but don't skip the footnotes on a read,
+they're a lot of fun. Note that the footnote numbering re-starts at the
+beginning of each chapter.
 }
 \keyword{datasets}

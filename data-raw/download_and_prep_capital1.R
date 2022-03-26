@@ -53,13 +53,12 @@ prettify_credits <- function(credits) {
 # then recombine.
 text_tags <- c("indentb", "fst", "quoteb", "quotec")
 fn_tags <- c("information", "transcriber") # ch17 and 25 use transcriber class
-full_text <- list()
+full_text <- data.frame(chapter = integer(0), text = character(0))
 full_toc <- c()
-full_fn <- list()
+full_fn <- data.frame(chapter = integer(0), text = character(0))
 full_credits <- c()
 
 for (chapter in lpad(1:33)) {
-  chapter_name <- paste("Chapter", chapter, sep = "_")
   pretty_chapter_name <- paste("Chapter", as.numeric(chapter), sep = " ")
   # read page & get attributes
   link <- paste0(home, "ch", chapter, ".htm")
@@ -103,18 +102,59 @@ for (chapter in lpad(1:33)) {
   credit_idx <- grepl("transcribed|markup", tolower(fn_text))
 
   # combine text
-  full_text[[chapter_name]] <- main_text
-  full_toc <- c(full_toc, pretty_Bchapter_name, toc_text)
-  full_fn[[chapter_name]]  <- fn_text[!credit_idx]
+  full_toc <- c(full_toc, pretty_chapter_name, toc_text)
+  full_text <- rbind(
+    full_text,
+    data.frame(chapter = as.integer(chapter), text = main_text)
+  )
+  full_fn <- rbind(
+    full_fn,
+    data.frame(chapter = as.integer(chapter), text = fn_text[!credit_idx])
+  )
   full_credits <-  c(full_credits, fn_text[credit_idx])
 }
 
 # A little bit of clean-up & restructuring
-capital_vol1 <- list(
-  toc = prettify_toc(full_toc),
-  body = full_text,
-  footnotes = full_fn,
-  credits = prettify_credits(full_credits)
+chapter_to_part <- data.frame(
+  chapter = 1:33,
+  part = c(
+    rep(1L, 3),
+    rep(2L, 3),
+    rep(3L, 5),
+    rep(4L, 4),
+    rep(5L, 3),
+    rep(6L, 4),
+    rep(7L, 3),
+    rep(8L, 8)
+  )
+)
+body_df <- full_text %>%
+  left_join(chapter_to_part, by = c("chapter")) %>%
+  mutate(section = "body") %>%
+  select(section, part, chapter, text)
+
+footnote_df <- full_fn %>%
+  left_join(chapter_to_part, by = c("chapter")) %>%
+  mutate(section = "footnotes") %>%
+  select(section, part, chapter, text)
+
+capital_vol1 <- bind_rows(
+  list(
+    data.frame(
+      section = "toc",
+      part = 1L,
+      chapter = 1L,
+      text = prettify_toc(full_toc)
+    ),
+    body_df,
+    footnote_df,
+    data.frame(
+      section = "credits",
+      part = 1L,
+      chapter = 1L,
+      text = prettify_credits(full_credits)
+    )
+  )
 )
 
 # Add the data files to the package
