@@ -3,7 +3,8 @@ Title: Capital vol 1 in an analysis-ready format
 Version: 0.0.0.1
 Authors@R: 
     person("Circe", "Malone", ,"circemalone@gmail.com", role = c("aut", "cre"))
-Description: Analysis-ready text for Capital Vol 1
+Description: Provides an analysis-ready dataframe containing 
+  the text for Capital Vol 1.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
