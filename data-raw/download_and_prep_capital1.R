@@ -24,18 +24,6 @@ tidy_whitespace <- function(v) {
   unique(gsub("^ *", "", v))
 }
 
-prettify_toc <- function(toc) {
-  tc <- tidy_whitespace(toc)
-
-  # White space addition
-  # Hierarchy: chapter, section, capital letters, numbers, lower letters
-  tc <- gsub("^Section", "  Section", tc)
-  tc[grepl("^[A-Z]\\.", tc)] <- paste0("    ", tc[grepl("^[A-Z]\\.", tc)])
-  tc[grepl("^[0-9]\\.", tc)] <- paste0("      ", tc[grepl("^[0-9]\\.", tc)])
-  tc[grepl("^[a-z]\\.", tc)] <- paste0("        ", tc[grepl("^[a-z]\\.", tc)])
-  tc
-}
-
 prettify_credits <- function(credits) {
   tidied_credits <- gsub("(.*by )| \\(.*", "", tidy_whitespace(credits)) %>%
     strsplit(" & ") %>%
@@ -144,7 +132,7 @@ capital_vol1 <- bind_rows(
       section = "toc",
       part = 1L,
       chapter = 1L,
-      text = prettify_toc(full_toc)
+      text = tidy_whitespace(full_toc)
     ),
     body_df,
     footnote_df,

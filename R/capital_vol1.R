@@ -38,9 +38,19 @@
 
 capital_vol1_book <- function() {
   capital_vol1 <- getExportedValue(getNamespace(packageName()), "capital_vol1")
-  capital_vol1$sort <- 1L
 
+  # Table of Contents reformatting:
+  # Add some white space padding to make levels clear
+  tc <- capital_vol1$text[capital_vol1$section == "toc"]
+  tc <- gsub("^Section", "  Section", tc)
+  tc[grepl("^[A-Z]\\.", tc)] <- paste0("    ", tc[grepl("^[A-Z]\\.", tc)])
+  tc[grepl("^[0-9]\\.", tc)] <- paste0("      ", tc[grepl("^[0-9]\\.", tc)])
+  tc[grepl("^[a-z]\\.", tc)] <- paste0("        ", tc[grepl("^[a-z]\\.", tc)])
+
+  # Footnote reformatting:
   # Numbering re-starts at each chapter, for legibility, add chapter titles
+  fn_bound <- capital_vol1[capital_vol1$section == "footnotes", ]
+  fn_bound$sort <- 1L
   footnote_headers <- data.frame(
     section = "footnotes",
     part = 0L,
@@ -48,21 +58,15 @@ capital_vol1_book <- function() {
     text = c("Footnotes", paste0("Chapter ", 1:33)),
     sort = 0L
   )
-  fn_bound <- rbind(
-    capital_vol1[capital_vol1$section == "footnotes", ],
-    footnote_headers
-  )
+  fn_bound <- rbind(fn_bound, footnote_headers)
   fn_bound <- fn_bound[with(fn_bound, order(chapter, sort)), ]
-  fn_bound$sort <- NULL
-  capital_vol1$sort <- NULL
 
-  rebind <- rbind(
-    capital_vol1[capital_vol1$section %in% c("toc", "body"), ],
-    fn_bound,
-    data.frame(section = "credits", part = 1L, chapter = 1L, text = "Credits"),
-    capital_vol1[capital_vol1$section %in% c("credits"), ]
+  c("Capital by Karl Marx (1867)",
+    tc,
+    capital_vol1$text[capital_vol1$section == "body"],
+    fn_bound$text,
+    "Credits",
+    capital_vol1$text[capital_vol1$section %in% c("credits")]
   )
-
-  c("Capital by Karl Marx (1867)", rebind$text)
 }
 
