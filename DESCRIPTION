@@ -14,6 +14,7 @@ Depends:
 LazyData: true
 Suggests: 
     dplyr,
+    stringr,
     rvest,
     hexSticker,
     testthat (>= 3.0.0)

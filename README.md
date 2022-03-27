@@ -44,14 +44,13 @@ writeLines(book, "capital_vol1.txt")
 Or you can count the number of occurrences of a word:
 
 ``` r
-sum(
-  vapply(
-    capital_vol1[["text"]],
-    function(x) {
-      sum(lengths(regmatches(tolower(x), gregexpr("linen", tolower(x)))))
-    },
-    numeric(1),
-    USE.NAMES = FALSE
+capital_vol1 %>%
+  mutate(
+    n_linen = stringr::str_count(text, "linen"),
+    n_coat  = stringr::str_count(text, "coat"),
+  ) %>%
+  summarize(
+    tot_linen = sum(n_linen),
+    tot_coat  = sum(n_coat)
   )
-)
 ```

@@ -14,7 +14,7 @@ rm_slashr <- function(s) {
 }
 
 rm_footnotes <- function(v) {
-  v[!grepl("^( )*footnotes", tolower(v))]
+  v[!grepl("^( )*footnotes", v, ignore.case = TRUE)]
 }
 
 tidy_whitespace <- function(v) {
@@ -99,7 +99,7 @@ for (chapter in lpad(1:33)) {
     rm_slashr()
 
   # separate footnotes and credits
-  credit_idx <- grepl("transcribed|markup", tolower(fn_text))
+  credit_idx <- grepl("transcribed|markup", fn_text, ignore.case = TRUE)
 
   # combine text
   full_toc <- c(full_toc, pretty_chapter_name, toc_text)
