@@ -17,5 +17,16 @@ Suggests:
     stringr,
     rvest,
     hexSticker,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    knitr,
+    rmarkdown,
+    tidyr,
+    tidytext,
+    SnowballC,
+    ggplot2,
+    ggtext,
+    scales,
+    igraph,
+    ggraph
 Config/testthat/edition: 3
+VignetteBuilder: knitr
