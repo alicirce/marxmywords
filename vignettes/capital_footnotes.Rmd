@@ -1,0 +1,418 @@
+---
+title: "Footnotes"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Footnotes}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  fig.align = "center",
+  comment = "#>"
+)
+```
+
+```{css, echo = FALSE}
+img {
+  border: 0px;
+}
+```
+
+The footnotes in *Capital* have many readers (or at the very least [delighted
+me](https://twitter.com/alicirce/status/1507570059115261954?s=20&t=nszdA0niiRUUsK3tNcUVgA).
+Some footnotes are wry asides, some provide interesting historical context or
+literary allusions. Marx often used this space to sarcastically and humourously
+point out the flaws in his peers' arguments. When I read *Capital*, I came
+across one particularly amusing footnote in which Marx eviscerates Malthus for
+several pages, and I wondered if it was the longest footnote. If not, which
+footnotes were longer? Which footnote was the shortest?
+
+And so I made an R package to answer these questions.
+
+## Methods
+
+```{r setup, echo=FALSE}
+library(marxmywords)
+library(dplyr)
+library(tidyr)
+library(purrr)
+library(ggplot2)
+
+theme_marx <- function() {
+  theme_classic() %+replace%
+    theme(
+      strip.background = element_rect(fill = "white", color = NA),
+      axis.text = element_text(color = "black"),
+      plot.caption = element_text(color = "grey50", hjust = 1, size = 6),
+      plot.subtitle = element_text(size = 7.5, color = "grey30", hjust = 0)
+    )
+}
+
+pretty_chapter_names <- function(v){
+  fct <- paste("Chapter", 1:33)
+  factor(paste("Chapter", v), levels = fct)
+}
+```
+
+{{marxmywords}} provides the text for *Capital* as a data frame. For more on the
+structure and source of this text, see `help(capital_vol1)`. For now, we are
+only interested in the footnotes, so we will filter for those rows (each row
+corresponds to one footnote). We will also do a little bit of tidying up of the
+text: remove leading and trailing white space and the number associated with the
+footnote. Finally, we will count the number of characters in each footnote.
+
+```{r}
+tidy_footnotes <- capital_vol1 %>%
+  filter(section == "footnotes") %>%
+  # remove leading white space
+  mutate(text = gsub("^ *", "", text)) %>%
+  # extract footnote number 
+  mutate(
+    ref = as.numeric(gsub("(*)\\. .*", "\\1", text)),
+    text = gsub("^[0-9]+\\. *", "", text)
+  ) %>% 
+  # remove trailing white space
+  mutate(text = gsub(" *$", "", text)) %>%
+  mutate(
+    chapter_names = pretty_chapter_names(chapter),
+    n_characters = nchar(text)
+  ) %>%
+  # remove empty rows
+  filter(n_characters >= 1 & !is.na(ref))
+```
+
+## Analysis
+
+### The longest footnote in Capital
+```{r fig.height = 4, fig.width = 6}
+
+max_fn_per_chapter <- tidy_footnotes %>%
+  group_by(chapter) %>%
+  slice(which.max(n_characters)) %>%
+  select(chapter_names, longest_fn = n_characters)
+
+tidy_footnotes %>%
+  left_join(max_fn_per_chapter, by = "chapter_names") %>%
+  mutate(color_flag = n_characters == longest_fn) %>%
+  ggplot() +
+  aes(x = chapter_names) +
+  geom_segment(
+    aes(
+      x = chapter_names, 
+      xend = chapter_names,
+      y = 0, yend = n_characters * color_flag
+    ),
+    color = "grey90",
+    size = 2.2
+  ) +
+  geom_jitter(
+    aes(color = color_flag,  y = n_characters),
+    size = 0.1,
+    width = 0.1
+  ) +
+  annotate(
+    "point",
+    x = forcats::fct_rev(max_fn_per_chapter$chapter_names), 
+    y = max_fn_per_chapter$longest_fn,
+    color = "red"
+  ) +
+  ylab("characters per footnote") +
+  theme_marx() +
+  theme(
+    legend.position = "none",
+    axis.ticks = element_blank(),
+    panel.grid.major.y = element_line(color = "grey95"),
+    axis.line.y = element_blank(),
+    axis.text.y = element_text(size = 9),
+    axis.title.x = element_blank(),
+    axis.text.x = element_text(size = 9, angle = 90, vjust = 0.5),
+    plot.title = element_text(size = 12, hjust = 0)
+  ) +
+  scale_color_manual(values = c("black", "red")) +
+  scale_size_manual(values = c(0.1, 1)) +
+  scale_y_continuous(expand = c(0, 0, 0.1, 0.1)) +
+  labs(
+    title = "Footnotes in Capital: the long and the short",
+    caption = "{marxmywords}"
+  )
+
+```
+From the graph above, we can see the longest footnote is in Chapter 25, although there are a few close competitors!
+
+```{r echo=FALSE}
+longest_footnote <- tidy_footnotes %>%
+  slice(which.max(n_characters)) %>%
+  pull(text)
+
+```
+
+> `r longest_footnote`
+
+So there you have it: Malthus provoked the longest diatribe.
+
+### The shortest footnotes
+
+Finding the shortest footnote is unfortunately a little harder to define.
+Naively sorting for the fewest characters gets us a bunch of "l.c." ("last
+cited") plus a reference to Petty (the economist, though it would be funny if
+this was instead a commentary on the small mindedness of a statement).
+
+```{r}
+tidy_footnotes %>%
+  arrange(n_characters) %>%
+  head()
+
+```
+
+
+```{r fig.width=4,fig.height=3}
+shortest_non_ref_fn <- data.frame(
+  ref = c(144, 12, 30, 44, 2, 7),
+  chapter = c(15, 7, 15, 25, 30, 3)
+)
+
+inner_join(tidy_footnotes, shortest_non_ref_fn, by = c("chapter", "ref")) %>%
+  mutate(text = reorder(text, n_characters)) %>%
+  ggplot() +
+  aes( x = n_characters, y = text, color = text ) +
+  geom_point() +
+  geom_segment(aes(xend = 0, yend = text)) +
+  geom_label(
+    aes(x = 0, label = text),
+    fill = "white",
+    label.size = NA,
+    label.padding = unit(0, "cm"),
+    hjust = 0,
+    nudge_x = 1,
+    size = 3.5
+  ) +
+  scale_color_manual(values = c("red", rep("black", 5))) +
+  scale_x_continuous(expand = c(0, 0, 0.1, 0.1)) +
+  theme_marx() +
+  theme(
+    legend.position = "none",
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    axis.line.y = element_line(size = 0.4),
+    axis.title.y = element_blank()
+  ) +
+  xlab("Number of characters") +
+  labs(
+    title = "Footnotes in Capital: shortest footnotes",
+    caption = "{marxmywords}"
+  )
+
+```
+
+### Tweetable Footnotes
+
+Marx had many back and forth debates with others in his fields. What would these
+look like if, instead of occurring over published written works and at
+conferences, they took place over twitter? Many footnotes, such as the longest
+one above, are excoriations of other philosophers and economists in the field.
+How many of these are tweet-sized?
+
+From our analysis above, we know that the shortest non-citation footnote is 29
+characters long. Twitter allows tweets up to 280 characters. How many fall in
+between this limits?
+
+```{r fig.height=4.5, fig.width=6}
+
+twitter_text <- c(
+  "just citations",
+  "potentially great twitter material",
+  "too long to tweet"
+)
+
+fn_fill_counts <- tidy_footnotes %>%
+  mutate(fill_flag = case_when(
+    n_characters <= 28   ~ twitter_text[1],
+    n_characters > 280   ~ twitter_text[3],
+    TRUE                 ~ twitter_text[2]
+  )) %>%
+  group_by(fill_flag) %>%
+  tally() %>%
+  mutate(fill_flag = factor(fill_flag, levels = twitter_text)) %>%
+  arrange(fill_flag)
+
+fn_fill_counts$xmid <- c(
+  log10(28/2), 
+  (log10(280)-log10(28))/2 + log10(28), 
+  (log10(6852) - log10(280))/2 + log10(280)
+)
+
+
+p <- tidy_footnotes %>%
+  ggplot() + 
+  aes(x = n_characters) +
+  geom_density() +
+  scale_x_log10()
+
+ggplot_build(p)$data[[1]] %>%
+  mutate(fill_flag = case_when(
+    x <= log10(28)   ~ twitter_text[1],
+    x > log10(280)   ~ twitter_text[3],
+    TRUE             ~ twitter_text[2]
+  )) %>%
+  mutate(fill_flag = factor(fill_flag, levels = twitter_text)) %>%
+  ggplot() +
+  aes(x = x, y = y, fill = fill_flag) +
+  geom_area() +
+  annotate(
+    "segment",
+    linetype = "dashed", size = 1, 
+    x = log10(28), xend = log10(28),
+    y = 0, yend = 0.45
+  ) + 
+  annotate(
+    "text",
+    x = log10(28),
+    y = 0.5,
+    label = "everything < 29 characters\n is just a citation"
+  ) +
+  annotate(
+    "segment",
+    linetype = "dashed", size = 1, 
+    x = log10(6852), xend = log10(6852),
+    y = 0, yend = 0.14
+  ) + 
+  annotate(
+    "text",
+    x = log10(6852),
+    y = 0.32,
+    label = "the longest\nfootnote\nwould be a\n25-tweet thread\nslamming\nMalthus"
+  ) +
+  annotate(
+    "segment",
+    linetype = "dashed", size = 1, 
+    x = log10(280), xend = log10(280),
+    y = 0, yend = 0.70
+  ) + 
+  annotate(
+    "text",
+    x = log10(280),
+    y = 0.75,
+    label = "280 characters"
+  ) +
+  annotate(
+    "text",
+    label = paste0(fn_fill_counts$n, "\nfootnotes"),
+    x = fn_fill_counts$xmid,
+    y = 0.05,
+    color = "black"
+  ) +
+  theme_marx() +
+  theme(
+    legend.position = c(0.15, 0.9),
+    legend.title = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
+    axis.line.y = element_blank(),
+    panel.grid.major.y = element_blank(),
+    axis.title = element_blank()
+  ) +
+  scale_fill_manual(values = c("grey60", "#1DA1F2", "grey80")) +
+  ylab("Quantity of footnotes") +
+  xlab("Number of characters (log scale)") +
+  labs(
+    title = "Footnotes of Capital: what if Marx had twitter?",
+    caption = "{marxmywords}"
+  ) +
+  scale_x_continuous(expand = c(0.01, 0.35)) +
+  scale_y_continuous(expand = c(0, 0, 0.1, 0.1))
+
+```
+
+### Citation Content
+
+Whose work does Marx cite – either in support or to critique? Adam Smith and
+Ricardo spring to mind, perhaps first and foremost; who else makes it into the
+top 10?
+
+To answer this, I used spacyr, an R port of the python NLP package spacy, and
+extracted all words tagged as proper nouns. The writers below all had at least
+20 mentions across both the main text and footnotes. 
+
+```{r fig.height=3,fig.width=4}
+count_total_mentions <- function(word, text) {
+  suppressWarnings(sum(stringr::str_count(text, word)))
+}
+
+philosophers <- c(
+  "Smith",
+  "Mill",
+  "Marx",
+  "Engels",
+  "Ricardo",
+  "Senior",
+  "Malthus",
+  "Ure",
+  "Hunter",
+  "Wakefield"
+)
+
+main_and_footnotes <- capital_vol1 %>%
+  filter(section %in% c("footnotes", "body"))
+
+philosopher_counts <- vapply(
+  philosophers, 
+  count_total_mentions, 
+  main_and_footnotes$text,
+  FUN.VALUE = numeric(1)
+)
+
+
+philosopher_counts %>%
+  stack() %>%
+  select(philosopher = ind, mentions = values) %>%
+  mutate(philosopher = reorder(philosopher, mentions)) %>%
+  ggplot() +
+  aes(y = philosopher, x = mentions) +
+  geom_point() +
+  geom_segment(
+    aes(xend = 0, yend = philosopher)
+  ) +
+  scale_x_continuous(
+    expand = c(0, 0, 0.1, 0.1)
+  ) +
+  scale_color_manual(
+    values = c(rep("black", 9), "red")
+  ) +
+  theme_marx() +
+  theme(
+    legend.position = "none",
+    axis.ticks.y = element_blank(),
+    axis.line.y = element_blank(),
+    axis.title.y = element_blank(),
+    plot.title.position = "plot",
+    plot.title = element_text(hjust = 0.5, size = 12)
+  ) +
+  xlab("# mentions") +
+  labs(
+    title = "Capital: economists & philosophers by # mentions",
+    caption = "{marxmywords}"
+  )
+  
+
+```
+(Note that I didn't distinguish between father and son James Mill and John Stuart Mill. Some footnotes were added by Engels and signed with his full name, and so would be counted in here, however others are signed F.E., and would not be included in this count.)
+
+Most of these aren't so surprising. Smith, Ricardo, the Mills, Malthus, and Senior all wrote political economy works that Marx was directly critiquing and/or building on. It also makes sense than Marx would cite his earlier works (mostly *Zur Kritik der Politischen Oekonomie* and *Misère de la Philosophie*), and those of his frequent co-author Engels. 
+
+A few heavily cited people stood out to me. Politician
+[Wakefield](https://en.wikipedia.org/wiki/Edward_Gibbon_Wakefield) ranks in the
+top ten, although nearly all of his mentions (20/25) occur in a single,
+relatively short chapter. This chapter (chapter 33) discusses primitive
+accumulation and colonialism. Dr. Julian Hunter was commissioned to investigate
+public health issues affecting the working class, and his saddening findings are
+cited mainly in Chapter 25 (20/25 mentions). [Dr Andrew
+Ure](https://en.wikipedia.org/wiki/Andrew_Ure) wrote on the manufacturing
+industry in England and is cited primarily in Chapter 15 (18/37).
+
+
+

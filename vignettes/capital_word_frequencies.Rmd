@@ -47,7 +47,7 @@ theme_marx <- function() {
       strip.background = element_rect(fill = "white", color = NA),
       axis.text = element_text(color = "black"),
       plot.caption = element_text(color = "grey50", hjust = 1, size = 6),
-      plot.subtitle = element_text(size = 7.5, color = "grey30", hjust = 0),
+      plot.subtitle = element_text(size = 7.3, color = "grey30", hjust = 0),
       axis.line.y = element_blank(),
       panel.background = element_rect(color = NA)
     )
@@ -214,7 +214,7 @@ word_counts_per_chapter %>%
 Let's try answer the question posed at the top of the analysis: do the words that come to mind when you think of *Capital* actually rank as the most common words? Here, we will count word frequencies by word stem, which allows us to group together "labourer" and "labourers" and similar pairs. For display purposes, I'll show the most common word associated with each stem.
 
 ```{r wordcounts, fig.width = 4, fig.height =3}
-subt <- "Word counts by stem (e.g., 'commodity' and 'commodities')"
+subt <- "Word counts by stem (e.g., commodity + commodities)"
 counts_by_stem  <- capital_unstopped %>%
   # sum up counts across each word
   group_by(word, stem) %>%
@@ -313,7 +313,8 @@ p_layout %>%
   theme_void() +
   theme(
     legend.position = "none",
-    plot.caption = element_text(color = "grey50", hjust = 1, size = 7)
+    plot.caption = element_text(color = "grey50", hjust = 1, size = 7),
+    plot.title = element_text(hjust = 0.5)
   ) +
   labs(
     title = "Concept Clusters in Capital",
@@ -351,7 +352,9 @@ top_10_bigrams %>%
     legend.position = "none",
     axis.ticks.y = element_blank(),
     axis.line.y = element_blank(),
-    axis.title.y = element_blank()
+    axis.title.y = element_blank(),
+    plot.title = element_text(hjust = 0.5),
+    plot.title.position = "plot"
   ) +
   xlab("# occurrences") +
   labs(

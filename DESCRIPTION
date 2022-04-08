@@ -21,6 +21,7 @@ Suggests:
     knitr,
     rmarkdown,
     tidyr,
+    purrr,
     tidytext,
     SnowballC,
     ggplot2,
