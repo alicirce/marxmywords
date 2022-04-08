@@ -273,6 +273,7 @@ ggplot_build(p)$data[[1]] %>%
     "text",
     x = log10(28),
     y = 0.5,
+    size = 3.5,
     label = "everything < 29 characters\n is just a citation"
   ) +
   annotate(
@@ -284,7 +285,8 @@ ggplot_build(p)$data[[1]] %>%
   annotate(
     "text",
     x = log10(6852),
-    y = 0.32,
+    y = 0.30,
+    size = 3.5,
     label = "the longest\nfootnote\nwould be a\n25-tweet thread\nslamming\nMalthus"
   ) +
   annotate(
@@ -297,6 +299,7 @@ ggplot_build(p)$data[[1]] %>%
     "text",
     x = log10(280),
     y = 0.75,
+    size = 3.5,
     label = "280 characters"
   ) +
   annotate(
@@ -394,7 +397,7 @@ philosopher_counts %>%
   ) +
   xlab("# mentions") +
   labs(
-    title = "Capital: economists & philosophers by # mentions",
+    title = "Capital: citated writers by # mentions",
     caption = "{marxmywords}"
   )
   
