@@ -75,7 +75,7 @@ img {
   border: 0px;
 }
 </style>
-<p>The footnotes in <em>Capital</em> have many readers (or at the very least <a href="https://twitter.com/alicirce/status/1507570059115261954?s=20&amp;t=nszdA0niiRUUsK3tNcUVgA" class="external-link">delighted me</a>. Some footnotes are wry asides, some provide interesting historical context or literary allusions. Marx often used this space to sarcastically and humourously point out the flaws in his peers’ arguments. When I read <em>Capital</em>, I came across one particularly amusing footnote in which Marx eviscerates Malthus for several pages, and I wondered if it was the longest footnote. If not, which footnotes were longer? Which footnote was the shortest?</p>
+<p>The footnotes in <em>Capital</em> have many readers (or at the very least <a href="https://twitter.com/alicirce/status/1507570059115261954?s=20&amp;t=nszdA0niiRUUsK3tNcUVgA" class="external-link">delighted me</a>). Some footnotes are wry asides, some provide interesting historical context or literary allusions. Marx often used this space to sarcastically and humourously point out the flaws in his peers’ arguments. When I read <em>Capital</em>, I came across one particular footnote in which Marx eviscerates Malthus for several pages, and I wondered if it was the longest footnote. If not, which footnotes were longer? Which footnote was the shortest?</p>
 <p>And so I made an R package to answer these questions.</p>
 <div class="section level2">
 <h2 id="methods">Methods<a class="anchor" aria-label="anchor" href="#methods"></a>
@@ -106,57 +106,6 @@ img {
 <div class="section level3">
 <h3 id="the-longest-footnote-in-capital">The longest footnote in Capital<a class="anchor" aria-label="anchor" href="#the-longest-footnote-in-capital"></a>
 </h3>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="va">max_fn_per_chapter</span> <span class="op">&lt;-</span> <span class="va">tidy_footnotes</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">chapter</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/which.min.html" class="external-link">which.max</a></span><span class="op">(</span><span class="va">n_characters</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">chapter_names</span>, longest_fn <span class="op">=</span> <span class="va">n_characters</span><span class="op">)</span>
-
-<span class="va">tidy_footnotes</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">max_fn_per_chapter</span>, by <span class="op">=</span> <span class="st">"chapter_names"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>color_flag <span class="op">=</span> <span class="va">n_characters</span> <span class="op">==</span> <span class="va">longest_fn</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu">ggplot</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">chapter_names</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">geom_segment</span><span class="op">(</span>
-    <span class="fu">aes</span><span class="op">(</span>
-      x <span class="op">=</span> <span class="va">chapter_names</span>, 
-      xend <span class="op">=</span> <span class="va">chapter_names</span>,
-      y <span class="op">=</span> <span class="fl">0</span>, yend <span class="op">=</span> <span class="va">n_characters</span> <span class="op">*</span> <span class="va">color_flag</span>
-    <span class="op">)</span>,
-    color <span class="op">=</span> <span class="st">"grey90"</span>,
-    size <span class="op">=</span> <span class="fl">2.2</span>
-  <span class="op">)</span> <span class="op">+</span>
-  <span class="fu">geom_jitter</span><span class="op">(</span>
-    <span class="fu">aes</span><span class="op">(</span>color <span class="op">=</span> <span class="va">color_flag</span>,  y <span class="op">=</span> <span class="va">n_characters</span><span class="op">)</span>,
-    size <span class="op">=</span> <span class="fl">0.1</span>,
-    width <span class="op">=</span> <span class="fl">0.1</span>
-  <span class="op">)</span> <span class="op">+</span>
-  <span class="fu">annotate</span><span class="op">(</span>
-    <span class="st">"point"</span>,
-    x <span class="op">=</span> <span class="fu">forcats</span><span class="fu">::</span><span class="fu"><a href="https://forcats.tidyverse.org/reference/fct_rev.html" class="external-link">fct_rev</a></span><span class="op">(</span><span class="va">max_fn_per_chapter</span><span class="op">$</span><span class="va">chapter_names</span><span class="op">)</span>, 
-    y <span class="op">=</span> <span class="va">max_fn_per_chapter</span><span class="op">$</span><span class="va">longest_fn</span>,
-    color <span class="op">=</span> <span class="st">"red"</span>
-  <span class="op">)</span> <span class="op">+</span>
-  <span class="fu">ylab</span><span class="op">(</span><span class="st">"characters per footnote"</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">theme_marx</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">theme</span><span class="op">(</span>
-    legend.position <span class="op">=</span> <span class="st">"none"</span>,
-    axis.ticks <span class="op">=</span> <span class="fu">element_blank</span><span class="op">(</span><span class="op">)</span>,
-    panel.grid.major.y <span class="op">=</span> <span class="fu">element_line</span><span class="op">(</span>color <span class="op">=</span> <span class="st">"grey95"</span><span class="op">)</span>,
-    axis.line.y <span class="op">=</span> <span class="fu">element_blank</span><span class="op">(</span><span class="op">)</span>,
-    axis.text.y <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>size <span class="op">=</span> <span class="fl">9</span><span class="op">)</span>,
-    axis.title.x <span class="op">=</span> <span class="fu">element_blank</span><span class="op">(</span><span class="op">)</span>,
-    axis.text.x <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>size <span class="op">=</span> <span class="fl">9</span>, angle <span class="op">=</span> <span class="fl">90</span>, vjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span>,
-    plot.title <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>size <span class="op">=</span> <span class="fl">12</span>, hjust <span class="op">=</span> <span class="fl">0</span><span class="op">)</span>
-  <span class="op">)</span> <span class="op">+</span>
-  <span class="fu">scale_color_manual</span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"black"</span>, <span class="st">"red"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">scale_size_manual</span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">scale_y_continuous</span><span class="op">(</span>expand <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0.1</span>, <span class="fl">0.1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">labs</span><span class="op">(</span>
-    title <span class="op">=</span> <span class="st">"Footnotes in Capital: the long and the short"</span>,
-    caption <span class="op">=</span> <span class="st">"{marxmywords}"</span>
-  <span class="op">)</span></code></pre></div>
 <p><img src="capital_footnotes_files/figure-html/unnamed-chunk-4-1.png" width="576" style="display: block; margin: auto;"> From the graph above, we can see the longest footnote is in Chapter 25, although there are a few close competitors!</p>
 <blockquote>
 <p>If the reader reminds me of Malthus, whose “Essay on Population” appeared in 1798, I remind him that this work in its first form is nothing more than a schoolboyish, superficial plagiary of De Foe, Sir James Steuart, Townsend, Franklin, Wallace, &amp;c., and does not contain a single sentence thought out by himself. The great sensation this pamphlet caused, was due solely to party interest. The French Revolution had found passionate defenders in the United Kingdom; the “principle of population,” slowly worked out in the eighteenth century, and then, in the midst of a great social crisis, proclaimed with drums and trumpets as the infallible antidote to the teachings of Condorcet, &amp;c., was greeted with jubilance by the English oligarchy as the great destroyer of all hankerings after human development. Malthus, hugely astonished at his success, gave himself to stuffing into his book materials superficially compiled, and adding to it new matter, not discovered but annexed by him. Note further: Although Malthus was a parson of the English State Church, he had taken the monastic vow of celibacy — one of the conditions of holding a Fellowship in Protestant Cambridge University: “Socios collegiorum maritos esse non permittimus, sed statim postquam quis uxorem duxerit socius collegii desinat esse.” (“Reports of Cambridge University Commission,” p. 172.) This circumstance favourably distinguishes Malthus from the other Protestant parsons, who have shuffled off the command enjoining celibacy of the priesthood and have taken, “Be fruitful and multiply,” as their special Biblical mission in such a degree that they generally contribute to the increase of population to a really unbecoming extent, whilst they preach at the same time to the labourers the “principle of population.” It is characteristic that the economic fall of man, the Adam’s apple, the urgent appetite, “the checks which tend to blunt the shafts of Cupid,” as Parson Townsend waggishly puts it, that this delicate question was and is monopolised by the Reverends of Protestant Theology, or rather of the Protestant Church. With the exception of the Venetian monk, Ortes, an original and clever writer, most of the population theory teachers are Protestant parsons. For instance, Bruckner, “Théorie du Système animal,” Leyde, 1767, in which the whole subject of the modern population theory is exhausted, and to which the passing quarrel between Quesnay and his pupil, the elder Mirabeau, furnished ideas on the same topic; then Parson Wallace, Parson Townsend, Parson Malthus and his pupil, the arch-Parson Thomas Chalmers, to say nothing of lesser reverend scribblers in this line. Originally, Political Economy was studied by philosophers like Hobbes, Locke, Hume; by businessmen and statesmen, like Thomas More, Temple, Sully, De Witt, North, Law, Vanderlint, Cantillon, Franklin; and especially, and with the greatest success, by medical men like Petty, Barbon, Mandeville, Quesnay. Even in the middle of the eighteenth century, the Rev. Mr. Tucker, a notable economist of his time, excused himself for meddling with the things of Mammon. Later on, and in truth with this very “Principle of population,” struck the hour of the Protestant parsons. Petty, who regarded the population as the basis of wealth, and was, like Adam Smith, an outspoken foe to parsons, says, as if he had a presentiment of their bungling interference, “that Religion best flourishes when the Priests are most mortified, as was before said of the Law, which best flourisheth when lawyers have least to do.” He advises the Protestant priests, therefore, if they, once for all, will not follow the Apostle Paul and “mortify” themselves by celibacy, “not to breed more Churchmen than the Benefices, as they now stand shared out, will receive, that is to say, if there be places for about twelve thousand in England and Wales, it will not be safe to breed up 24,000 ministers, for then the twelve thousand which are unprovided for, will seek ways how to get themselves a livelihood, which they cannot do more easily than by persuading the people that the twelve thousand incumbents do poison or starve their souls, and misguide them in their way to Heaven.” (Petty: “A Treatise of Taxes and Contributions,” London, 1667, p. 57.) Adam Smith’s position with the Protestant priesthood of his time is shown by the following. In “A Letter to A. Smith, L.L.D. On the Life, Death, and Philosophy of his Friend, David Hume. By one of the People called Christians,” 4th Edition, Oxford, 1784, Dr. Horne, Bishop of Norwich, reproves Adam Smith, because in a published letter to Mr. Strahan, he “embalmed his friend David” (sc. Hume); because he told the world how “Hume amused himself on his deathbed with Lucian and Whist,” and because he even had the impudence to write of Hume: “I have always considered him, both in his life-time and since his death, as approaching as nearly to the idea of a perfectly wise and virtuous man, as, perhaps, the nature of human frailty will permit.” The bishop cries out, in a passion: “Is it right in you, Sir, to hold up to our view as ‘perfectly wise and virtuous,’ the character and conduct of one, who seems to have been possessed with an incurable antipathy to all that is called Religion; and who strained every nerve to explode, suppress and extirpate the spirit of it among men, that its very name, if he could effect it, might no more be had in remembrance?” (l. c., p. 8.) “But let not the lovers of truth be discouraged. Atheism cannot be of long continuance.” (P. 17.) Adam Smith, “had the atrocious wickedness to propagate atheism through the land (viz., by his “Theory of Moral Sentiments”). Upon the whole, Doctor, your meaning is good; but I think you will not succeed this time. You would persuade us, by the example of David Hume, Esq., that atheism is the only cordial for low spirits, and the proper antidote against the fear of death…. You may smile over Babylon in ruins and congratulate the hardened Pharaoh on his overthrow in the Red Sea.” (l. c., pp. 21, 22.) One orthodox individual, amongst Adam Smith’s college friends, writes after his death: “Smith’s well-placed affection for Hume … hindered him from being a Christian…. When he met with honest men whom he liked … he would believe almost anything they said. Had he been a friend of the worthy ingenious Horrox he would have believed that the moon some times disappeared in a clear sky without the interposition of a cloud…. He approached to republicanism in his political principles.” (“The Bee.” By James Anderson, 18 Vols., Vol. 3, pp. 166, 165, Edinburgh, 1791-93.) Parson Thomas Chalmers has his suspicions as to Adam Smith having invented the category of “unproductive labourers,” solely for the Protestant parsons, in spite of their blessed work in the vineyard of the Lord.</p>
@@ -167,7 +116,7 @@ img {
 <h3 id="the-shortest-footnotes">The shortest footnotes<a class="anchor" aria-label="anchor" href="#the-shortest-footnotes"></a>
 </h3>
 <p>Finding the shortest footnote is unfortunately a little harder to define. Naively sorting for the fewest characters gets us a bunch of “l.c.” (“last cited”) plus a reference to Petty (the economist, though it would be funny if this was instead a commentary on the small mindedness of a statement).</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tidy_footnotes</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">n_characters</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
   <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span>
@@ -178,42 +127,6 @@ img {
 <span class="co">#&gt; 4 footnotes    3      10   l.c. 136    Chapter 10            4</span>
 <span class="co">#&gt; 5 footnotes    3      10   l.c. 137    Chapter 10            4</span>
 <span class="co">#&gt; 6 footnotes    2       6 Petty.   8     Chapter 6            6</span></code></pre></div>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">shortest_non_ref_fn</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>
-  ref <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">144</span>, <span class="fl">12</span>, <span class="fl">30</span>, <span class="fl">44</span>, <span class="fl">2</span>, <span class="fl">7</span><span class="op">)</span>,
-  chapter <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">15</span>, <span class="fl">7</span>, <span class="fl">15</span>, <span class="fl">25</span>, <span class="fl">30</span>, <span class="fl">3</span><span class="op">)</span>
-<span class="op">)</span>
-
-<span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">inner_join</a></span><span class="op">(</span><span class="va">tidy_footnotes</span>, <span class="va">shortest_non_ref_fn</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"chapter"</span>, <span class="st">"ref"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>text <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/reorder.factor.html" class="external-link">reorder</a></span><span class="op">(</span><span class="va">text</span>, <span class="va">n_characters</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu">ggplot</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">aes</span><span class="op">(</span> x <span class="op">=</span> <span class="va">n_characters</span>, y <span class="op">=</span> <span class="va">text</span>, color <span class="op">=</span> <span class="va">text</span> <span class="op">)</span> <span class="op">+</span>
-  <span class="fu">geom_point</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">geom_segment</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>xend <span class="op">=</span> <span class="fl">0</span>, yend <span class="op">=</span> <span class="va">text</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">geom_label</span><span class="op">(</span>
-    <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="fl">0</span>, label <span class="op">=</span> <span class="va">text</span><span class="op">)</span>,
-    fill <span class="op">=</span> <span class="st">"white"</span>,
-    label.size <span class="op">=</span> <span class="cn">NA</span>,
-    label.padding <span class="op">=</span> <span class="fu">unit</span><span class="op">(</span><span class="fl">0</span>, <span class="st">"cm"</span><span class="op">)</span>,
-    hjust <span class="op">=</span> <span class="fl">0</span>,
-    nudge_x <span class="op">=</span> <span class="fl">1</span>,
-    size <span class="op">=</span> <span class="fl">3.5</span>
-  <span class="op">)</span> <span class="op">+</span>
-  <span class="fu">scale_color_manual</span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"red"</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"black"</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">scale_x_continuous</span><span class="op">(</span>expand <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0.1</span>, <span class="fl">0.1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">theme_marx</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">theme</span><span class="op">(</span>
-    legend.position <span class="op">=</span> <span class="st">"none"</span>,
-    axis.text.y <span class="op">=</span> <span class="fu">element_blank</span><span class="op">(</span><span class="op">)</span>,
-    axis.ticks.y <span class="op">=</span> <span class="fu">element_blank</span><span class="op">(</span><span class="op">)</span>,
-    axis.line.y <span class="op">=</span> <span class="fu">element_line</span><span class="op">(</span>size <span class="op">=</span> <span class="fl">0.4</span><span class="op">)</span>,
-    axis.title.y <span class="op">=</span> <span class="fu">element_blank</span><span class="op">(</span><span class="op">)</span>
-  <span class="op">)</span> <span class="op">+</span>
-  <span class="fu">xlab</span><span class="op">(</span><span class="st">"Number of characters"</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">labs</span><span class="op">(</span>
-    title <span class="op">=</span> <span class="st">"Footnotes in Capital: shortest footnotes"</span>,
-    caption <span class="op">=</span> <span class="st">"{marxmywords}"</span>
-  <span class="op">)</span></code></pre></div>
 <p><img src="capital_footnotes_files/figure-html/unnamed-chunk-7-1.png" width="384" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
@@ -221,113 +134,6 @@ img {
 </h3>
 <p>Marx had many back and forth debates with others in his fields. What would these look like if, instead of occurring over published written works and at conferences, they took place over twitter? Many footnotes, such as the longest one above, are excoriations of other philosophers and economists in the field. How many of these are tweet-sized?</p>
 <p>From our analysis above, we know that the shortest non-citation footnote is 29 characters long. Twitter allows tweets up to 280 characters. How many fall in between this limits?</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="va">twitter_text</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>
-  <span class="st">"just citations"</span>,
-  <span class="st">"potentially great twitter material"</span>,
-  <span class="st">"too long to tweet"</span>
-<span class="op">)</span>
-
-<span class="va">fn_fill_counts</span> <span class="op">&lt;-</span> <span class="va">tidy_footnotes</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>fill_flag <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span>
-    <span class="va">n_characters</span> <span class="op">&lt;=</span> <span class="fl">28</span>   <span class="op">~</span> <span class="va">twitter_text</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,
-    <span class="va">n_characters</span> <span class="op">&gt;</span> <span class="fl">280</span>   <span class="op">~</span> <span class="va">twitter_text</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span>,
-    <span class="cn">TRUE</span>                 <span class="op">~</span> <span class="va">twitter_text</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>
-  <span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">fill_flag</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">tally</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>fill_flag <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">fill_flag</span>, levels <span class="op">=</span> <span class="va">twitter_text</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">fill_flag</span><span class="op">)</span>
-
-<span class="va">fn_fill_counts</span><span class="op">$</span><span class="va">xmid</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="fl">28</span><span class="op">/</span><span class="fl">2</span><span class="op">)</span>, 
-  <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="fl">280</span><span class="op">)</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="fl">28</span><span class="op">)</span><span class="op">)</span><span class="op">/</span><span class="fl">2</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="fl">28</span><span class="op">)</span>, 
-  <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="fl">6852</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="fl">280</span><span class="op">)</span><span class="op">)</span><span class="op">/</span><span class="fl">2</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="fl">280</span><span class="op">)</span>
-<span class="op">)</span>
-
-
-<span class="va">p</span> <span class="op">&lt;-</span> <span class="va">tidy_footnotes</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu">ggplot</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">n_characters</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">geom_density</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">scale_x_log10</span><span class="op">(</span><span class="op">)</span>
-
-<span class="fu">ggplot_build</span><span class="op">(</span><span class="va">p</span><span class="op">)</span><span class="op">$</span><span class="va">data</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>fill_flag <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span>
-    <span class="va">x</span> <span class="op">&lt;=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="fl">28</span><span class="op">)</span>   <span class="op">~</span> <span class="va">twitter_text</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,
-    <span class="va">x</span> <span class="op">&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="fl">280</span><span class="op">)</span>   <span class="op">~</span> <span class="va">twitter_text</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span>,
-    <span class="cn">TRUE</span>             <span class="op">~</span> <span class="va">twitter_text</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>
-  <span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>fill_flag <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">fill_flag</span>, levels <span class="op">=</span> <span class="va">twitter_text</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu">ggplot</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span>, y <span class="op">=</span> <span class="va">y</span>, fill <span class="op">=</span> <span class="va">fill_flag</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">geom_area</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">annotate</span><span class="op">(</span>
-    <span class="st">"segment"</span>,
-    linetype <span class="op">=</span> <span class="st">"dashed"</span>, size <span class="op">=</span> <span class="fl">1</span>, 
-    x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="fl">28</span><span class="op">)</span>, xend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="fl">28</span><span class="op">)</span>,
-    y <span class="op">=</span> <span class="fl">0</span>, yend <span class="op">=</span> <span class="fl">0.45</span>
-  <span class="op">)</span> <span class="op">+</span> 
-  <span class="fu">annotate</span><span class="op">(</span>
-    <span class="st">"text"</span>,
-    x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="fl">28</span><span class="op">)</span>,
-    y <span class="op">=</span> <span class="fl">0.5</span>,
-    size <span class="op">=</span> <span class="fl">3.5</span>,
-    label <span class="op">=</span> <span class="st">"everything &lt; 29 characters\n is just a citation"</span>
-  <span class="op">)</span> <span class="op">+</span>
-  <span class="fu">annotate</span><span class="op">(</span>
-    <span class="st">"segment"</span>,
-    linetype <span class="op">=</span> <span class="st">"dashed"</span>, size <span class="op">=</span> <span class="fl">1</span>, 
-    x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="fl">6852</span><span class="op">)</span>, xend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="fl">6852</span><span class="op">)</span>,
-    y <span class="op">=</span> <span class="fl">0</span>, yend <span class="op">=</span> <span class="fl">0.14</span>
-  <span class="op">)</span> <span class="op">+</span> 
-  <span class="fu">annotate</span><span class="op">(</span>
-    <span class="st">"text"</span>,
-    x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="fl">6852</span><span class="op">)</span>,
-    y <span class="op">=</span> <span class="fl">0.30</span>,
-    size <span class="op">=</span> <span class="fl">3.5</span>,
-    label <span class="op">=</span> <span class="st">"the longest\nfootnote\nwould be a\n25-tweet thread\nslamming\nMalthus"</span>
-  <span class="op">)</span> <span class="op">+</span>
-  <span class="fu">annotate</span><span class="op">(</span>
-    <span class="st">"segment"</span>,
-    linetype <span class="op">=</span> <span class="st">"dashed"</span>, size <span class="op">=</span> <span class="fl">1</span>, 
-    x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="fl">280</span><span class="op">)</span>, xend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="fl">280</span><span class="op">)</span>,
-    y <span class="op">=</span> <span class="fl">0</span>, yend <span class="op">=</span> <span class="fl">0.70</span>
-  <span class="op">)</span> <span class="op">+</span> 
-  <span class="fu">annotate</span><span class="op">(</span>
-    <span class="st">"text"</span>,
-    x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="fl">280</span><span class="op">)</span>,
-    y <span class="op">=</span> <span class="fl">0.75</span>,
-    size <span class="op">=</span> <span class="fl">3.5</span>,
-    label <span class="op">=</span> <span class="st">"280 characters"</span>
-  <span class="op">)</span> <span class="op">+</span>
-  <span class="fu">annotate</span><span class="op">(</span>
-    <span class="st">"text"</span>,
-    label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">fn_fill_counts</span><span class="op">$</span><span class="va">n</span>, <span class="st">"\nfootnotes"</span><span class="op">)</span>,
-    x <span class="op">=</span> <span class="va">fn_fill_counts</span><span class="op">$</span><span class="va">xmid</span>,
-    y <span class="op">=</span> <span class="fl">0.05</span>,
-    color <span class="op">=</span> <span class="st">"black"</span>
-  <span class="op">)</span> <span class="op">+</span>
-  <span class="fu">theme_marx</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">theme</span><span class="op">(</span>
-    legend.position <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.15</span>, <span class="fl">0.9</span><span class="op">)</span>,
-    legend.title <span class="op">=</span> <span class="fu">element_blank</span><span class="op">(</span><span class="op">)</span>,
-    axis.text <span class="op">=</span> <span class="fu">element_blank</span><span class="op">(</span><span class="op">)</span>,
-    axis.ticks <span class="op">=</span> <span class="fu">element_blank</span><span class="op">(</span><span class="op">)</span>,
-    axis.line.y <span class="op">=</span> <span class="fu">element_blank</span><span class="op">(</span><span class="op">)</span>,
-    panel.grid.major.y <span class="op">=</span> <span class="fu">element_blank</span><span class="op">(</span><span class="op">)</span>,
-    axis.title <span class="op">=</span> <span class="fu">element_blank</span><span class="op">(</span><span class="op">)</span>
-  <span class="op">)</span> <span class="op">+</span>
-  <span class="fu">scale_fill_manual</span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"grey60"</span>, <span class="st">"#1DA1F2"</span>, <span class="st">"grey80"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">ylab</span><span class="op">(</span><span class="st">"Quantity of footnotes"</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">xlab</span><span class="op">(</span><span class="st">"Number of characters (log scale)"</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">labs</span><span class="op">(</span>
-    title <span class="op">=</span> <span class="st">"Footnotes of Capital: what if Marx had twitter?"</span>,
-    caption <span class="op">=</span> <span class="st">"{marxmywords}"</span>
-  <span class="op">)</span> <span class="op">+</span>
-  <span class="fu">scale_x_continuous</span><span class="op">(</span>expand <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.01</span>, <span class="fl">0.35</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">scale_y_continuous</span><span class="op">(</span>expand <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0.1</span>, <span class="fl">0.1</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p><img src="capital_footnotes_files/figure-html/unnamed-chunk-8-1.png" width="576" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
@@ -335,65 +141,6 @@ img {
 </h3>
 <p>Whose work does Marx cite – either in support or to critique? Adam Smith and Ricardo spring to mind, perhaps first and foremost; who else makes it into the top 10?</p>
 <p>To answer this, I used spacyr, an R port of the python NLP package spacy, and extracted all words tagged as proper nouns. The writers below all had at least 20 mentions across both the main text and footnotes.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">count_total_mentions</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">word</span>, <span class="va">text</span><span class="op">)</span> <span class="op">{</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/warning.html" class="external-link">suppressWarnings</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_count.html" class="external-link">str_count</a></span><span class="op">(</span><span class="va">text</span>, <span class="va">word</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="op">}</span>
-
-<span class="va">philosophers</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>
-  <span class="st">"Smith"</span>,
-  <span class="st">"Mill"</span>,
-  <span class="st">"Marx"</span>,
-  <span class="st">"Engels"</span>,
-  <span class="st">"Ricardo"</span>,
-  <span class="st">"Senior"</span>,
-  <span class="st">"Malthus"</span>,
-  <span class="st">"Ure"</span>,
-  <span class="st">"Hunter"</span>,
-  <span class="st">"Wakefield"</span>
-<span class="op">)</span>
-
-<span class="va">main_and_footnotes</span> <span class="op">&lt;-</span> <span class="va">capital_vol1</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">section</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"footnotes"</span>, <span class="st">"body"</span><span class="op">)</span><span class="op">)</span>
-
-<span class="va">philosopher_counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span>
-  <span class="va">philosophers</span>, 
-  <span class="va">count_total_mentions</span>, 
-  <span class="va">main_and_footnotes</span><span class="op">$</span><span class="va">text</span>,
-  FUN.VALUE <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>
-<span class="op">)</span>
-
-
-<span class="va">philosopher_counts</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://rdrr.io/r/utils/stack.html" class="external-link">stack</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span>philosopher <span class="op">=</span> <span class="va">ind</span>, mentions <span class="op">=</span> <span class="va">values</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>philosopher <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/reorder.factor.html" class="external-link">reorder</a></span><span class="op">(</span><span class="va">philosopher</span>, <span class="va">mentions</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu">ggplot</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">aes</span><span class="op">(</span>y <span class="op">=</span> <span class="va">philosopher</span>, x <span class="op">=</span> <span class="va">mentions</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">geom_point</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">geom_segment</span><span class="op">(</span>
-    <span class="fu">aes</span><span class="op">(</span>xend <span class="op">=</span> <span class="fl">0</span>, yend <span class="op">=</span> <span class="va">philosopher</span><span class="op">)</span>
-  <span class="op">)</span> <span class="op">+</span>
-  <span class="fu">scale_x_continuous</span><span class="op">(</span>
-    expand <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0.1</span>, <span class="fl">0.1</span><span class="op">)</span>
-  <span class="op">)</span> <span class="op">+</span>
-  <span class="fu">scale_color_manual</span><span class="op">(</span>
-    values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"black"</span>, <span class="fl">9</span><span class="op">)</span>, <span class="st">"red"</span><span class="op">)</span>
-  <span class="op">)</span> <span class="op">+</span>
-  <span class="fu">theme_marx</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">theme</span><span class="op">(</span>
-    legend.position <span class="op">=</span> <span class="st">"none"</span>,
-    axis.ticks.y <span class="op">=</span> <span class="fu">element_blank</span><span class="op">(</span><span class="op">)</span>,
-    axis.line.y <span class="op">=</span> <span class="fu">element_blank</span><span class="op">(</span><span class="op">)</span>,
-    axis.title.y <span class="op">=</span> <span class="fu">element_blank</span><span class="op">(</span><span class="op">)</span>,
-    plot.title.position <span class="op">=</span> <span class="st">"plot"</span>,
-    plot.title <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span>, size <span class="op">=</span> <span class="fl">12</span><span class="op">)</span>
-  <span class="op">)</span> <span class="op">+</span>
-  <span class="fu">xlab</span><span class="op">(</span><span class="st">"# mentions"</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">labs</span><span class="op">(</span>
-    title <span class="op">=</span> <span class="st">"Capital: cited writers by # mentions"</span>,
-    caption <span class="op">=</span> <span class="st">"{marxmywords}"</span>
-  <span class="op">)</span></code></pre></div>
 <p><img src="capital_footnotes_files/figure-html/unnamed-chunk-9-1.png" width="384" style="display: block; margin: auto;"> (Note that I didn’t distinguish between father and son James Mill and John Stuart Mill. Some footnotes were added by Engels and signed with his full name, and so would be counted in here, however others are signed F.E., and would not be included in this count.)</p>
 <p>Most of these aren’t so surprising. Smith, Ricardo, the Mills, Malthus, and Senior all wrote political economy works that Marx was directly critiquing and/or building on. It also makes sense than Marx would cite his earlier works (mostly <em>Zur Kritik der Politischen Oekonomie</em> and <em>Misère de la Philosophie</em>), and those of his frequent co-author Engels.</p>
 <p>A few heavily cited people stood out to me. Dr. Julian Hunter was commissioned to investigate public health issues affecting the working class, and his saddening findings are cited mainly in Chapter 25 (20/25 mentions). Politician <a href="https://en.wikipedia.org/wiki/Edward_Gibbon_Wakefield" class="external-link">Wakefield</a> ranks in the top ten despite nearly all of his mentions (20/25) occuring in a single, relatively short chapter. This chapter (chapter 33) discusses primitive accumulation and colonialism, and Wakefield had a scheme of systematic colonization named after him. <a href="https://en.wikipedia.org/wiki/Andrew_Ure" class="external-link">Dr Andrew Ure</a> wrote on the manufacturing industry in England and is cited primarily in Chapter 15 (18/37).</p>
