@@ -24,11 +24,11 @@ img {
 ```
 
 The footnotes in *Capital* have many readers (or at the very least [delighted
-me](https://twitter.com/alicirce/status/1507570059115261954?s=20&t=nszdA0niiRUUsK3tNcUVgA).
+me](https://twitter.com/alicirce/status/1507570059115261954?s=20&t=nszdA0niiRUUsK3tNcUVgA)).
 Some footnotes are wry asides, some provide interesting historical context or
 literary allusions. Marx often used this space to sarcastically and humourously
 point out the flaws in his peers' arguments. When I read *Capital*, I came
-across one particularly amusing footnote in which Marx eviscerates Malthus for
+across one particular footnote in which Marx eviscerates Malthus for
 several pages, and I wondered if it was the longest footnote. If not, which
 footnotes were longer? Which footnote was the shortest?
 
@@ -89,7 +89,7 @@ tidy_footnotes <- capital_vol1 %>%
 ## Analysis
 
 ### The longest footnote in Capital
-```{r fig.height = 4, fig.width = 6}
+```{r fig.height = 4, fig.width = 6, echo=FALSE}
 
 max_fn_per_chapter <- tidy_footnotes %>%
   group_by(chapter) %>%
@@ -170,7 +170,7 @@ tidy_footnotes %>%
 ```
 
 
-```{r fig.width=4,fig.height=3}
+```{r fig.width=4,fig.height=3, echo=FALSE}
 shortest_non_ref_fn <- data.frame(
   ref = c(144, 12, 30, 44, 2, 7),
   chapter = c(15, 7, 15, 25, 30, 3)
@@ -221,7 +221,7 @@ From our analysis above, we know that the shortest non-citation footnote is 29
 characters long. Twitter allows tweets up to 280 characters. How many fall in
 between this limits?
 
-```{r fig.height=4.5, fig.width=6}
+```{r fig.height=4.5, fig.width=6, echo=FALSE}
 
 twitter_text <- c(
   "just citations",
@@ -341,7 +341,7 @@ To answer this, I used spacyr, an R port of the python NLP package spacy, and
 extracted all words tagged as proper nouns. The writers below all had at least
 20 mentions across both the main text and footnotes. 
 
-```{r fig.height=3,fig.width=4}
+```{r fig.height=3,fig.width=4, echo=FALSE}
 count_total_mentions <- function(word, text) {
   suppressWarnings(sum(stringr::str_count(text, word)))
 }
