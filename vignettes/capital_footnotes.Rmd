@@ -23,7 +23,7 @@ img {
 }
 ```
 
-The footnotes in *Capital* have many readers (or at the very least [delighted
+The footnotes in *Capital* have delighted many readers (or at the very least [delighted
 me](https://twitter.com/alicirce/status/1507570059115261954?s=20&t=nszdA0niiRUUsK3tNcUVgA)).
 Some footnotes are wry asides, some provide interesting historical context or
 literary allusions. Marx often used this space to sarcastically and humourously
@@ -158,7 +158,7 @@ So there you have it: Malthus provoked the longest diatribe.
 
 ### The shortest footnotes
 
-Finding the shortest footnote is unfortunately a little harder to define.
+The shortest footnote is unfortunately a little harder to identify.
 Naively sorting for the fewest characters gets us a bunch of "l.c." ("last
 cited") plus a reference to Petty (the economist, though it would be funny if
 this was instead a commentary on the small mindedness of a statement).
@@ -190,7 +190,7 @@ inner_join(tidy_footnotes, shortest_non_ref_fn, by = c("chapter", "ref")) %>%
     label.padding = unit(0, "cm"),
     hjust = 0,
     nudge_x = 1,
-    size = 3.5
+    size = 3.2
   ) +
   scale_color_manual(values = c("red", rep("black", 5))) +
   scale_x_continuous(expand = c(0, 0, 0.1, 0.1)) +
