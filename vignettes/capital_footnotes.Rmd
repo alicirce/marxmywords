@@ -189,7 +189,7 @@ inner_join(tidy_footnotes, shortest_non_ref_fn, by = c("chapter", "ref")) %>%
     label.padding = unit(0, "cm"),
     hjust = 0,
     nudge_x = 1,
-    size = 3
+    size = 3.5
   ) +
   scale_color_manual(values = c("red", rep("black", 5))) +
   scale_x_continuous(expand = c(0, 0, 0.1, 0.1)) +
@@ -397,23 +397,31 @@ philosopher_counts %>%
   ) +
   xlab("# mentions") +
   labs(
-    title = "Capital: citated writers by # mentions",
+    title = "Capital: cited writers by # mentions",
     caption = "{marxmywords}"
   )
   
 
 ```
-(Note that I didn't distinguish between father and son James Mill and John Stuart Mill. Some footnotes were added by Engels and signed with his full name, and so would be counted in here, however others are signed F.E., and would not be included in this count.)
+(Note that I didn't distinguish between father and son James Mill and John
+Stuart Mill. Some footnotes were added by Engels and signed with his full name,
+and so would be counted in here, however others are signed F.E., and would not
+be included in this count.)
 
-Most of these aren't so surprising. Smith, Ricardo, the Mills, Malthus, and Senior all wrote political economy works that Marx was directly critiquing and/or building on. It also makes sense than Marx would cite his earlier works (mostly *Zur Kritik der Politischen Oekonomie* and *Misère de la Philosophie*), and those of his frequent co-author Engels. 
+Most of these aren't so surprising. Smith, Ricardo, the Mills, Malthus, and
+Senior all wrote political economy works that Marx was directly critiquing
+and/or building on. It also makes sense than Marx would cite his earlier works
+(mostly *Zur Kritik der Politischen Oekonomie* and *Misère de la Philosophie*),
+and those of his frequent co-author Engels.
 
-A few heavily cited people stood out to me. Politician
+A few heavily cited people stood out to me. Dr. Julian Hunter was commissioned
+to investigate public health issues affecting the working class, and his
+saddening findings are cited mainly in Chapter 25 (20/25 mentions). Politician
 [Wakefield](https://en.wikipedia.org/wiki/Edward_Gibbon_Wakefield) ranks in the
-top ten, although nearly all of his mentions (20/25) occur in a single,
+top ten despite nearly all of his mentions (20/25) occuring in a single,
 relatively short chapter. This chapter (chapter 33) discusses primitive
-accumulation and colonialism. Dr. Julian Hunter was commissioned to investigate
-public health issues affecting the working class, and his saddening findings are
-cited mainly in Chapter 25 (20/25 mentions). [Dr Andrew
+accumulation and colonialism, and Wakefield had a scheme of systematic
+colonization named after him. [Dr Andrew
 Ure](https://en.wikipedia.org/wiki/Andrew_Ure) wrote on the manufacturing
 industry in England and is cited primarily in Chapter 15 (18/37).
 
