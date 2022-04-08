@@ -75,7 +75,7 @@ img {
   border: 0px;
 }
 </style>
-<p>The footnotes in <em>Capital</em> have many readers (or at the very least <a href="https://twitter.com/alicirce/status/1507570059115261954?s=20&amp;t=nszdA0niiRUUsK3tNcUVgA" class="external-link">delighted me</a>). Some footnotes are wry asides, some provide interesting historical context or literary allusions. Marx often used this space to sarcastically and humourously point out the flaws in his peers’ arguments. When I read <em>Capital</em>, I came across one particular footnote in which Marx eviscerates Malthus for several pages, and I wondered if it was the longest footnote. If not, which footnotes were longer? Which footnote was the shortest?</p>
+<p>The footnotes in <em>Capital</em> have delighted many readers (or at the very least <a href="https://twitter.com/alicirce/status/1507570059115261954?s=20&amp;t=nszdA0niiRUUsK3tNcUVgA" class="external-link">delighted me</a>). Some footnotes are wry asides, some provide interesting historical context or literary allusions. Marx often used this space to sarcastically and humourously point out the flaws in his peers’ arguments. When I read <em>Capital</em>, I came across one particular footnote in which Marx eviscerates Malthus for several pages, and I wondered if it was the longest footnote. If not, which footnotes were longer? Which footnote was the shortest?</p>
 <p>And so I made an R package to answer these questions.</p>
 <div class="section level2">
 <h2 id="methods">Methods<a class="anchor" aria-label="anchor" href="#methods"></a>
@@ -115,7 +115,7 @@ img {
 <div class="section level3">
 <h3 id="the-shortest-footnotes">The shortest footnotes<a class="anchor" aria-label="anchor" href="#the-shortest-footnotes"></a>
 </h3>
-<p>Finding the shortest footnote is unfortunately a little harder to define. Naively sorting for the fewest characters gets us a bunch of “l.c.” (“last cited”) plus a reference to Petty (the economist, though it would be funny if this was instead a commentary on the small mindedness of a statement).</p>
+<p>The shortest footnote is unfortunately a little harder to identify. Naively sorting for the fewest characters gets us a bunch of “l.c.” (“last cited”) plus a reference to Petty (the economist, though it would be funny if this was instead a commentary on the small mindedness of a statement).</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tidy_footnotes</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">n_characters</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
