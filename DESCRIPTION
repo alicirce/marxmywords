@@ -22,6 +22,7 @@ Suggests:
     rmarkdown,
     tidyr,
     purrr,
+    forcats,
     tidytext,
     SnowballC,
     ggplot2,
