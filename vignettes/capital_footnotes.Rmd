@@ -142,7 +142,8 @@ tidy_footnotes %>%
   )
 
 ```
-From the graph above, we can see the longest footnote is in Chapter 25, although there are a few close competitors!
+From the graph above, we can see the longest footnote is in Chapter 25, although
+there are a few close competitors!
 
 ```{r echo=FALSE}
 longest_footnote <- tidy_footnotes %>%
