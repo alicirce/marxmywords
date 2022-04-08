@@ -2,6 +2,7 @@ pandoc: 2.7.3
 pkgdown: 2.0.2
 pkgdown_sha: ~
 articles:
+  capital_footnotes: capital_footnotes.html
   capital_word_frequencies: capital_word_frequencies.html
-last_built: 2022-04-03T21:39Z
+last_built: 2022-04-08T03:52Z
 
