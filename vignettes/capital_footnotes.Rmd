@@ -28,9 +28,9 @@ me](https://twitter.com/alicirce/status/1507570059115261954?s=20&t=nszdA0niiRUUs
 Some footnotes are wry asides, some provide interesting historical context or
 literary allusions. Marx often used this space to sarcastically and humourously
 point out the flaws in his peers' arguments. When I read *Capital*, I came
-across one particular footnote in which Marx eviscerates Malthus for
-several pages, and I wondered if it was the longest footnote. If not, which
-footnotes were longer? Which footnote was the shortest?
+across one particular footnote in which Marx eviscerates Malthus for several
+pages, and I wondered if it was the longest footnote. If not, which footnotes
+were longer? Which footnote was the shortest?
 
 And so I made an R package to answer these questions.
 
@@ -418,7 +418,7 @@ A few heavily cited people stood out to me. Dr. Julian Hunter was commissioned
 to investigate public health issues affecting the working class, and his
 saddening findings are cited mainly in Chapter 25 (20/25 mentions). Politician
 [Wakefield](https://en.wikipedia.org/wiki/Edward_Gibbon_Wakefield) ranks in the
-top ten despite nearly all of his mentions (20/25) occuring in a single,
+top ten despite nearly all of his mentions (20/25) occurring in a single,
 relatively short chapter. This chapter (chapter 33) discusses primitive
 accumulation and colonialism, and Wakefield had a scheme of systematic
 colonization named after him. [Dr Andrew
