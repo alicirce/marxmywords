@@ -273,6 +273,7 @@ img {
     <span class="st">"text"</span>,
     x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="fl">28</span><span class="op">)</span>,
     y <span class="op">=</span> <span class="fl">0.5</span>,
+    size <span class="op">=</span> <span class="fl">3.5</span>,
     label <span class="op">=</span> <span class="st">"everything &lt; 29 characters\n is just a citation"</span>
   <span class="op">)</span> <span class="op">+</span>
   <span class="fu">annotate</span><span class="op">(</span>
@@ -284,7 +285,8 @@ img {
   <span class="fu">annotate</span><span class="op">(</span>
     <span class="st">"text"</span>,
     x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="fl">6852</span><span class="op">)</span>,
-    y <span class="op">=</span> <span class="fl">0.32</span>,
+    y <span class="op">=</span> <span class="fl">0.30</span>,
+    size <span class="op">=</span> <span class="fl">3.5</span>,
     label <span class="op">=</span> <span class="st">"the longest\nfootnote\nwould be a\n25-tweet thread\nslamming\nMalthus"</span>
   <span class="op">)</span> <span class="op">+</span>
   <span class="fu">annotate</span><span class="op">(</span>
@@ -297,6 +299,7 @@ img {
     <span class="st">"text"</span>,
     x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="fl">280</span><span class="op">)</span>,
     y <span class="op">=</span> <span class="fl">0.75</span>,
+    size <span class="op">=</span> <span class="fl">3.5</span>,
     label <span class="op">=</span> <span class="st">"280 characters"</span>
   <span class="op">)</span> <span class="op">+</span>
   <span class="fu">annotate</span><span class="op">(</span>
@@ -388,7 +391,7 @@ img {
   <span class="op">)</span> <span class="op">+</span>
   <span class="fu">xlab</span><span class="op">(</span><span class="st">"# mentions"</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu">labs</span><span class="op">(</span>
-    title <span class="op">=</span> <span class="st">"Capital: economists &amp; philosophers by # mentions"</span>,
+    title <span class="op">=</span> <span class="st">"Capital: citated writers by # mentions"</span>,
     caption <span class="op">=</span> <span class="st">"{marxmywords}"</span>
   <span class="op">)</span></code></pre></div>
 <p><img src="capital_footnotes_files/figure-html/unnamed-chunk-9-1.png" width="384" style="display: block; margin: auto;"> (Note that I didn’t distinguish between father and son James Mill and John Stuart Mill. Some footnotes were added by Engels and signed with his full name, and so would be counted in here, however others are signed F.E., and would not be included in this count.)</p>
