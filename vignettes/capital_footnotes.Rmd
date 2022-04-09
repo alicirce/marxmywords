@@ -22,17 +22,19 @@ img {
   border: 0px;
 }
 ```
+*Capital* shouldn't be thought of as an isolated work of political economy, but
+as part of an ongoing discourse as to the mechanics of capital and the solution
+to a society based around capital's impersonal domination. It can be easy to
+lose sight of that, reading *Capital* on its own 150 years later, without
+knowing the context of the discussions at the time. Marx can get a little snarky
+about the works of earlier political economists, and often uses the footnotes to
+sarcastically and humourously point out the flaws in his peers' arguments. It's
+fun to think of these conversations happening not in weighty tomes but over a
+platform like twitter.
 
-The footnotes in *Capital* have delighted many readers (or at the very least [delighted
-me](https://twitter.com/alicirce/status/1507570059115261954?s=20&t=nszdA0niiRUUsK3tNcUVgA)).
-Some footnotes are wry asides, some provide interesting historical context or
-literary allusions. Marx often used this space to sarcastically and humourously
-point out the flaws in his peers' arguments. When I read *Capital*, I came
-across one particular footnote in which Marx eviscerates Malthus for several
-pages, and I wondered if it was the longest footnote. If not, which footnotes
-were longer? Which footnote was the shortest?
-
-And so I made an R package to answer these questions.
+Here, I explore the footnotes of Capital: Which footnote is the longest (and how
+many tweets would that thread be?)? Which footnote is the shortest? What
+proportion of footnotes would fit in a tweet? Who would Marx tag in his tweets?
 
 ## Methods
 
@@ -59,7 +61,7 @@ pretty_chapter_names <- function(v){
 }
 ```
 
-{{marxmywords}} provides the text for *Capital* as a data frame. For more on the
+{marxmywords} provides the text for *Capital* as a data frame. For more on the
 structure and source of this text, see `help(capital_vol1)`. For now, we are
 only interested in the footnotes, so we will filter for those rows (each row
 corresponds to one footnote). We will also do a little bit of tidying up of the
@@ -145,7 +147,7 @@ tidy_footnotes %>%
 From the graph above, we can see the longest footnote is in Chapter 25, although
 there are a few close competitors!
 
-```{r echo=FALSE}
+```{r }
 longest_footnote <- tidy_footnotes %>%
   slice(which.max(n_characters)) %>%
   pull(text)
@@ -212,15 +214,9 @@ inner_join(tidy_footnotes, shortest_non_ref_fn, by = c("chapter", "ref")) %>%
 
 ### Tweetable Footnotes
 
-Marx had many back and forth debates with others in his fields. What would these
-look like if, instead of occurring over published written works and at
-conferences, they took place over twitter? Many footnotes, such as the longest
-one above, are excoriations of other philosophers and economists in the field.
-How many of these are tweet-sized?
-
 From our analysis above, we know that the shortest non-citation footnote is 29
 characters long. Twitter allows tweets up to 280 characters. How many fall in
-between this limits?
+between these limits?
 
 ```{r fig.height=4.5, fig.width=6, echo=FALSE}
 
@@ -334,9 +330,9 @@ ggplot_build(p)$data[[1]] %>%
 
 ### Citation Content
 
-Whose work does Marx cite – either in support or to critique? Adam Smith and
-Ricardo spring to mind, perhaps first and foremost; who else makes it into the
-top 10?
+Who would Marx tag in his tweets? Whose tweets would he be replying to? Adam
+Smith and Ricardo spring to mind, perhaps first and foremost; who else makes it
+into the top 10?
 
 To answer this, I used spacyr, an R port of the python NLP package spacy, and
 extracted all words tagged as proper nouns. The writers below all had at least
