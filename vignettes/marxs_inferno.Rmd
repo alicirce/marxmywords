@@ -1,0 +1,706 @@
+---
+title: "Social Hell"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Social Hell}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  echo = FALSE,
+  fig.align = "center"
+)
+```
+
+```{css, echo = FALSE}
+img {
+  border: 0px;
+}
+```
+
+
+```{r setup, echo=FALSE}
+library(marxmywords)
+library(dplyr)
+library(tidyr)
+library(tidytext)
+library(SnowballC)
+library(ggplot2)
+library(ggforce)
+library(geomtextpath)
+
+theme_marx <- function() {
+  theme_classic() %+replace%
+    theme(
+      strip.background = element_rect(fill = "white", color = NA),
+      axis.text = element_text(color = "black"),
+      plot.caption = element_text(color = "grey50", hjust = 1, size = 6),
+      plot.title = element_text(
+        size = 10, 
+        color = "#f20707", 
+        face = "bold", 
+        hjust = 0
+      ),
+      plot.subtitle = element_text(size = 8.5, color = "grey30", hjust = 0)
+    )
+}
+
+pretty_chapter_names <- function(v){
+  fct <- paste("Chapter", 1:33)
+  factor(paste("Chapter", v), levels = fct)
+}
+
+custom_stop <- data.frame(
+  word = c(
+    # units
+    "p.m", "a.m", "y", "lbs", "oz", "yards",
+    # equation variables
+    "b"
+  )
+)
+```
+> At the entrance to science, as at the entrance to hell, the demand must be
+made: "Here you must abandon every suspicion; here must all your cowardice die."
+(1859 Preface, Marx, quoting Dante's Divine Comedy)
+
+> Capital is dead labour, that, vampire-like, only lives by sucking living
+labour, and lives the more, the more labour it sucks. (Capital Vol 1, Marx 1867)
+
+# Introduction
+
+In *Capital*, Marx famously uses vivid metaphors, like monsters and vampires, to
+describe the uniquely exploitative nature of capital. But, what if the entire
+organization of the book was itself an infernal metaphor?
+
+William Clare Roberts wrote a book, *Marxs Inferno*, that argues that Marx
+structured his argument in *Capital* along the literary framework of Dante's
+*Inferno* — yes, the 14th century poem about a guy traveling through Hell.
+(*Marx's Inferno* argues a few other things, like that *Capital* should be read
+as an answer to contemporary socialist debates, but this part about the Divine
+Comedy is its ["weirdest and most ambitious
+claim"](https://redsails.org/losurdo-and-roberts/) and the one I'll focus on
+here.) 
+
+In *Inferno*, Dante is guided by the ancient poet Virgil through the nine
+circles of Hell. At the center of Hell, they encounter Satan devouring Judas and
+other famous betrayers. They escape Hell by climbing down Satan's legs, and pass
+through the center of the universe. In Roberts' reading of *Capital*, "Marx
+(...) cast himself as a Virgil for the proletariat, guiding his readers through
+the lower recesses of the capitalist economic order in order that they might
+learn not only how this 'infernal machine' works, but also what traps to avoid
+in their efforts to construct a new world."
+
+Like comparing capital to a vampire draining the life force of labourers
+communicates capital's unbounded parasitism, building *Capital* as an allusion
+to Dante's *Inferno* helps communicate a few complex ideas. Marx's opponents
+were divided between those preoccupied with the moralistic questions of
+socialism who wished to avoid political economy and those who wished to stay
+firmly within classical political economy. In this literary allusion, we
+encounter moral failures (incontinence, violence, fraud, treachery), but Marx
+instead rejects this moralistic framework, arguing that "it is capital, as a
+system of all-around domination, that is responsible for these evils, not the
+individuals dominated by capital." In comparing the proletariat with Dante, Marx
+"emphasizes the necessity of going *through* political economy in order to get
+*beyond* it", of confronting Satan/capital in order to escape their Hell
+(Roberts, 2017).
+
+I'll leave it to Roberts to defend how fond of Dante Marx was, how often Marx
+structured his other writings around literary works, and how clues from the
+drafting process suggest an intent to make his book *more* like *Inferno*. But
+is there support for this theory, of a descent through Hell, in the choice of
+language used?
+
+Sentiment analysis is a type of natural language processing (NLP) method that
+attempts to understand the emotions and other subjective information in text.
+This kind of analysis is used, for example, by social media sites to flag
+offensive content. If *Capital* is patterned as a descent through Hell, we might
+expect the sentiment of the text to become increasingly negative. Let's test
+that hypothesis!
+
+# Methods
+
+I removed stop words from the main text of *Capital* (e.g., "the", "a", and
+other linker words) using the onix and snowball lexicons available through
+`{tidytext}`. I tokenized the text into individual words, extracted the word
+stem (i.e., made it so that words like "worship" and "worships" were treated
+identically) and then ascribed one or more sentiments to a word-stem using the
+[NRC lexicon](https://onlinelibrary.wiley.com/doi/10.1111/j.1467-8640.2012.00460.x).
+This lexicon was developed through crowd-sourcing (via Mechanical Turk)
+relationships between words and emotions, and has been widely used (>1800
+citations on Google Scholar). I selected this lexicon because, of the four
+lexicons available in the `{tidytext}` package, the NRC lexicon mapped to the
+highest proportion of words. However, the same analysis conducted with the Bing,
+AFINN and Loughran lexicons recapitulated the trends shown here.
+
+For the positivity/negativity analysis, positive words were assigned a value of
+1 and negative words were assigned a value of -1. Net sentiments were calculated
+and normalized to the total number of words matched with a sentiment.  I
+excluded words from consideration if they were considered both positive and
+negative, or if no sentiment could be ascribed. For the assessment of other
+sentiments, the sum of words across each sentiment was normalized to the word
+count in each hell, and then normalized to the sentiment value of the first
+circle of Hell (for clearer data visualization). I excluded the word "money"
+from this analysis since it occurs with very high frequency; with "money"
+included in the analysis, sentiments associated with money (i.e., the
+emotions anger, anticipation, joy, surprise and trust) reflected primarily the
+incidence of the word "money." 
+
+```{r stop_words, echo=FALSE}
+data(stop_words)
+
+stop_words <- stop_words %>%
+  filter(lexicon %in% c("onix", "snowball"))
+
+# Also add in a few common words that aren't so interesting:
+custom_stop <- data.frame(
+  word = c(
+    # units
+    "day", "days", "time", "hour", "hours",
+     "p.m", "a.m", "y", "lbs", "oz", "yards",
+    # equation variables
+    "b", "n"
+  ),
+  lexicon = "custom"
+)
+
+stop_words <- stop_words %>%
+  bind_rows(custom_stop)
+
+nrc <- get_sentiments("nrc") 
+nrc_pn <- nrc %>%
+  filter(sentiment %in% c("positive", "negative")) %>% 
+  group_by(word) %>%
+  filter(n() == 1) %>%
+  mutate(sentiment = ifelse(sentiment == "positive", 1, -1))
+nrc_other <- nrc %>%
+  filter(!sentiment %in% c("positive", "negative"))
+
+```
+
+```{r echo=FALSE}
+capital_main <- capital_vol1 %>%
+  filter(section == "body") %>% 
+  # handle some annoying common cases not handled well by tokenization tools
+  mutate(
+    text = gsub("co-operat", "cooperat", text, ignore.case = T),
+    text = gsub("C-M-C", "CMC", text, ignore.case = T),
+    text = gsub("M-C-M", "MCM", text, ignore.case = T)
+  ) 
+
+capital_tokenized <- capital_main %>%
+  unnest_tokens(word, text) %>%
+  mutate(stem = wordStem(word))  %>%
+  # remove numeric tokens (references, dates, etc)
+  filter(!grepl("[0-9]+", word)) %>%
+  anti_join(stop_words)
+
+stem_word_map <- capital_tokenized %>%
+  group_by(stem, word) %>%
+  tally() %>%
+  ungroup() %>%
+  group_by(stem) %>%
+  slice(which.max(n)) %>%
+  select(-n)
+
+
+```
+
+```{r}
+marxs_inferno <- data.frame(
+  part = 1:8,
+  hell = c("Styx", rep("Dis", 2), rep("Malebolge", 4), "Cocytus")
+) %>%
+  mutate(
+    hell = factor(hell, c("Styx", "Dis", "Malebolge", "Cocytus"))
+  )
+
+marxs_inferno_tokenized <- capital_tokenized %>%
+  left_join(marxs_inferno, by = "part")
+
+```
+
+# The Circles of Hell In Capital
+
+```{r fig.height = 5, fig.width = 5}
+
+greys <- c("grey70", "grey54", "grey38", "grey22")
+
+
+# make black and white, with a white "out"
+fig1 <- data.frame(
+  hell = c("Styx", "Dis", "Malebolge", "Cocytus"),
+  sins = c("Incontinence", "Violence", "Fraud", "Treachery"),
+  circles = c("circles 1-5", "circles 6-7", "8th circle", "9th circle"),
+  chapters = c("1-3", "4-11", "12-25", "26-33"),
+  subject = c(
+    "Commodities, exchange, money",
+    "Capital, capitalist exploitation",
+    "Capitalist mode of production & accumulation",
+    "Primitive accumulation of capital"
+  )
+)
+
+create_arcs <- function(r, hell) {
+  arcs <- seq(r, 0, length.out = 1000)
+  data.frame(
+    x = -arcs,
+    y = sqrt(r**2 - arcs **2),
+    text = hell
+  )
+}
+
+hell_arc_labels <- bind_rows(
+  Map(create_arcs, 5:2 - 0.15, paste0(fig1$hell, ": ", fig1$sins)),
+  create_arcs(1 + 0.15, "Grapple with Satan to..."),
+  create_arcs(1 - 0.15, "...escape Hell"),
+  create_arcs(1 - 0.35, "(socialism)")
+)
+
+capital_arc_labels <- bind_rows(
+  Map(create_arcs, 5:2 - 0.35, paste0(fig1$subject)),
+  Map(
+    create_arcs, 5:2 - 0.55, 
+    paste0(fig1$circles, ", chapters ", fig1$chapters)
+  )
+)
+
+radii <- c(1, 1, 1, rep(1/2, 2), rep(1/5, 5))
+
+radiuses <- data.frame(
+  r = cumsum(radii), 
+  r0 = c(0, cumsum(radii)[-10])
+) 
+
+radiuses %>% 
+  ggplot() +
+  geom_arc_bar(
+    aes(
+      r = r, r0 = r0, x0 = 0, y0 = 0, 
+      start = -pi/2, end = 0, 
+      fill = factor(r),
+      color = factor(r)
+    ),
+    linewidth = 1,
+    alpha = 0.85
+  ) +
+  geom_textpath(
+    data = hell_arc_labels, 
+    aes(x = x, y = y, label = text),
+    linewidth = 0,
+    size = 3,
+    vjust = 0.5,
+    face = "bold"
+  ) +
+  geom_textpath(
+    data = capital_arc_labels, 
+    aes(x = x, y = y, label = text),
+    linewidth = 0,
+    size = 2.8,
+    vjust = 0.5
+  ) +
+  annotate(
+    "text",
+    x = -5, y = 5,
+    hjust = 0,
+    label = "Marx's Inferno",
+    color =  "#f20707", face = "bold"
+  ) +
+  annotate(
+    "text",
+    x = -5, y = 4.8,
+    hjust = 0, size = 3.2,
+    label = "Parallels between Dante's Inferno & Capital",
+    color =  "grey30"
+  ) +
+  annotate(
+    "text",
+    x = -5, y = 4.6,
+    hjust = 0, size = 2.2,
+    label = "Adapted from Roberts (2017)",
+    color =  "grey30"
+  ) +
+  theme_void() +
+  coord_fixed() +
+  scale_fill_manual(
+    values = rev(c(rep(greys[1], 5), rep(greys[2], 2), greys[3], greys[4], "white"))
+  ) +
+  scale_color_manual(
+    values = rev(c(rep(greys[1], 5),  rep(greys[2], 2), greys[3], greys[4], "white"))
+  ) +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(size = 10, color = "#f20707", face = "bold"),
+    plot.subtitle = element_text(size = 9, color = "grey30"),
+    plot.caption = element_text(color = "grey50", hjust = 1, size = 6)
+  ) 
+
+```
+
+Before we get into the results, let's quickly recap Roberts' argument for the
+similarities between *Capital* and *Inferno*. Roberts breaks both texts into
+four sections, as summarized in the figure above.
+
+```{r eval = FALSE}
+
+fig1$subject <- c(
+  "commondity fetishism",
+  "capitalist exploitation",
+  "the capitalist mode of production",
+  "primitive accumulation"
+)
+fig1$description <- c(
+  "The impersonal domination of market-based societies allows for free movement of capital and products rather than control of capital/products by its producers.",
+  "The relationship between capitalists and their workers is inherently one of force, as the boss controls and uses the workers to extract as much surplus value as possible from the labour power sold by the labourer.",
+  "While capitalism may promise improved productivity in the form of mechanization, co-operation, division of labour and other efficiencies of scale, it delivers little of these gains to the workers but instead produces alienation and miserable working conditions.",
+  "Betrayals presented here include (a) the expropriation of land from the peasants in violation of the mutual obligation between serfs and their lords, (b) the betrayal of the aristocrats in their new-found wealth by capital as the capitalists/bourgeoisie are freed by the abolition of feudalism, (c) the treachery of the state, acting as the agent of capital to do its 'dirty' work, and (d) that workers attempting to wield capitalism for their own benefit will inevitably find themselves betrayed by the nature of capital."
+)
+
+fig1 %>%
+  select(hell, circles, sins, chapters, subject, description) %>%
+  knitr::kable()
+```
+
+1. **Styx** (circles 1-5, chapters 1-3):
+*Sins of incontinence; commodity fetishism*.  
+The impersonal domination of market-based societies allows for free movement of
+capital and products rather than control of capital/products by its producers.
+2. **Dis** (circles 6-7, chapters 4-11): 
+*Sins of violence; capitalist exploitation.*  
+   The relationship between capitalists and their workers is inherently one of
+*force*, as the boss controls and uses the workers to extract as much surplus
+value as possible from the labour power sold by the labourer.
+3. **Malebolge** (8th circle of hell, chapters 12-25): 
+*Sins of fraud; the capitalist mode of production.*  
+   While capitalism may promise improved productivity in the form of 
+mechanization, co-operation, division of labour and other efficiencies of scale,
+it delivers little of these gains to the workers but instead produces alienation
+and miserable working conditions.
+4. **Cocytus** (9th circle of hell, chapters 26-33): 
+*Sins of treachery; primitive accumulation*.  
+   Betrayals presented here include: (a) the expropriation of land from the
+peasants in violation of the mutual obligation between serfs and their lords,
+(b) the betrayal of the aristocrats in their new-found wealth by capital as the
+capitalists/bourgeoisie are freed by the abolition of feudalism, (c) the
+treachery of the state, acting as the agent of capital to do its "dirty" work,
+and (d) that workers attempting to wield capitalism for their own benefit will
+inevitably find themselves betrayed by the nature of capital.
+
+It is only by moving *past* capitalism, by challenging Satan, that labourers can
+free themselves from oppression:
+
+> If Dante must confront Satan in order to escape his realm, then so must the
+labouring classes confront capital in order to escape the social Hell. Instead
+of trying to create their own capital, the labourers must realize that capital
+is a wealth that betrays and turns against its creators. (Roberts, 2017)
+
+# Change in text positivity during the descent through hell
+
+In Styx, we encounter sins of incontinence, and Marx presents value theory,
+exchange and money. This hell is associated with the most positive sentiments.
+From there, we decline in positivity into Dis and Malebolge. These circles of
+hell are marked in particular by the very negative chapters 10, 15 and 25 — the
+"historical" chapters that describe in detail the terrible living and working
+conditions of British workers in the 19th century and the legal battles for
+labour rights. We then encounter a massive drop in positivity as we descend into
+the ninth circle of hell and study the treachery of primitive accumulation. This
+relationship is statistically significant, for those who care about those sorts
+of things (p = 0.0002).
+
+```{r fig.height=4.5, fig.width=6}
+capital_sentiment <- marxs_inferno_tokenized %>%
+  left_join(nrc_pn, by = "word") %>%
+  filter(!is.na(sentiment)) 
+
+sentiments_by_chapter <- capital_sentiment %>%
+  group_by(hell, chapter) %>%
+  summarize(
+    sentiment = sum(sentiment)/n()
+  ) %>%
+  ungroup() %>%
+  group_by(hell) %>%
+  mutate(
+    med = median(sentiment),
+    mn = mean(sentiment)
+  ) %>%
+  ungroup() %>%
+  mutate(
+    chap_lab = ifelse(abs(sentiment - mn) > 0.15 , paste("Chapter", chapter), ""),
+    chap_y   = 0.5 * (sentiment + mn)
+  )
+
+sentiments_overall <- capital_sentiment %>%
+  summarize(
+    sentiment = sum(sentiment)/n()
+  )
+
+hell_segments <- sentiments_by_chapter %>%
+  group_by(hell) %>%
+  summarize(
+    xstart = min(chapter) - 0.3,
+    xend   = max(chapter) + 0.3,
+    xmid   = mean(chapter)
+)
+
+
+sentiments_by_chapter %>%
+  left_join(hell_segments, by = "hell") %>%
+  ggplot() +
+  aes(x = chapter, y = sentiment, color = hell) +
+  geom_hline(yintercept = sentiments_overall$sentiment, color = "grey90") +
+  geom_segment(
+    aes(
+      xend = chapter,
+      yend = mn
+    )
+  ) +
+  geom_point() +
+  geom_segment(
+    aes(
+      x    = xstart,
+      xend = xend,
+      y    = mn,
+      yend = mn
+    ),
+    size = 1,
+    alpha = 0.6
+  ) +
+  geom_text(
+    aes(label = chap_lab, y = chap_y),
+    angle = 90,
+    size = 3,
+    vjust = -0.4
+  ) +
+  annotate(
+    "text",
+    x = hell_segments$xmid, y = 0.7, label = hell_segments$hell,
+    color = c("#f20707", "#bf0d0d", "#540505", "#330505")
+  ) +
+  annotate(
+    "text",
+    x = 0,
+    y = c(0.1, -0.1) + sentiments_overall$sentiment,
+    label = c("more positive", "more negative"),
+    angle = 90, hjust = 0.5, vjust = -1,
+    color = "grey40"
+  ) +
+  theme_marx() +
+  scale_color_manual(
+    values = c("#f20707", "#bf0d0d", "#540505", "#330505")
+  ) +
+  theme(
+    legend.position = "none",
+    axis.line = element_blank(),
+    panel.grid = element_blank(),
+    axis.ticks = element_blank(),
+    axis.text = element_blank(),
+    axis.title = element_blank()
+  ) +
+  labs(
+    title = "Marx's Inferno: sentiments in Capital",
+    subtitle = "Sentiments expressed become more negative descending through the circles of hell",
+    caption = "{marxmywords}"
+  ) +
+  scale_y_continuous()
+
+
+
+```
+```{r linear_model}
+by_chapter <- lm(sentiment ~ chapter, sentiments_by_chapter)
+```
+
+# Change in sentiments by hell
+
+In addition to positive/negative, the NRC sentiment lexicon also associates
+words with one or more of eight emotions: anger, anticipation, disgust, fear,
+joy, sadness, surprise, trust. In the *Marx's Inferno* framework, we might
+expect increasing anger, disgust and fear as we descend through Hell. Based on
+the unique characteristics of each hell, we might also expect higher surprise
+and a loss of trust during the last two circles, which deal with fraud and
+betrayal.
+
+```{r fig.height = 3, fig.width = 4}
+
+marxs_inferno_tokenized %>%
+  left_join(nrc_other, by = "word") %>%
+  group_by(hell) %>%
+  mutate(word_count = n()) %>%
+  ungroup() %>%
+  filter(
+    !is.na(sentiment),
+    !word %in% c("money")
+  ) %>%
+  group_by(hell, sentiment, word_count) %>%
+  tally() %>%
+  ungroup() %>%
+  #normalize counts per hell to words per hell
+  mutate(freq = n/word_count) %>%
+  # normalize frequency to Styx (for nicer plotting)
+  group_by(sentiment) %>%
+  mutate(styx_freq = ifelse(hell == "Styx", freq, NA)) %>%
+  fill(styx_freq, .direction = "downup") %>%
+  mutate(freqn = freq/styx_freq) %>%
+  ggplot() +
+  aes(x = hell, y = freqn, group = 1) +
+  geom_line() +
+  facet_wrap(~sentiment, nrow = 2) +
+  theme_void() +
+  scale_y_continuous(
+    limits = c(0, NA),
+    breaks = c(0, 1, 2, 3, 4)
+  ) +
+  theme(
+    axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 9),
+    axis.text.y = element_text(size = 8, color = "grey30"),
+    axis.title = element_blank(),
+    panel.spacing.y = unit(1, "lines"),
+    panel.grid.major.y = element_line(color = "grey90"),
+    plot.title = element_text(size = 10, color = "#f20707", face = "bold"),
+    plot.subtitle = element_text(size = 9, color = "grey30"),
+    plot.caption = element_text(color = "grey50", hjust = 1, size = 6),
+    strip.text = element_text(size = 10, vjust = 1)
+  ) +
+  labs(
+    title = "Marx's Inferno",
+    subtitle = "Sentiment in Capital by circle of hell\n",
+    caption = "{marxmywords}"
+  )
+  
+```
+Breaking down the words in *Capital* into these eight emotional categories, we
+see a very strong increase in the negative emotions anger, disgust, fear and
+sadness (275%, 170%, 150%, 152% increase in the final circle of Hell relative to
+the initial circles of Hell). The uptick in joy is intriguing, but the effect
+size is not nearly as large as for the other emotions (65% higher in Cocytus
+relative to Styx). Overall, these trends are consistent with what we saw above
+in terms of declining positivity over the course of *Capital*.
+
+The emotions surprise and trust remain flat throughout *Capital*, counter to my
+hypothesis that chapters associated with fraud and betrayal might be associated
+with shock and loss of faith. While this finding doesn't necessarily provide
+additional support to the arguments presented in *Marx's Inferno*, perhaps it
+was too much to demand this level of emotional granularity in the text. After
+all, capital's betrayal of workers was not a particularly radical or unexpected
+claim to make even in 1867.
+
+
+# Limitations
+
+In this analysis, I linked sentiments to individual words rather than looking at
+the context in which the word was used. The graph below will, I think,
+immediately make it evident what some of the issues with this approach were.
+
+
+```{r fig.height=3,fig.width=4}
+capital_tokenized %>%
+  left_join(nrc_pn, by = "word") %>%
+  filter(!is.na(sentiment)) %>%
+  group_by(stem, sentiment) %>%
+  tally() %>%
+  left_join(stem_word_map) %>%
+  ungroup() %>%
+  mutate(
+    contribution = sentiment * n,
+    binary = ifelse(
+      sentiment > 0, 
+      "most positive", 
+      "most negative"
+    )
+  ) %>%
+  group_by(binary) %>%
+  arrange(desc(abs(contribution))) %>%
+  slice(1:6) %>%
+  mutate(pos = row_number()) %>%
+  mutate(word = reorder(word, abs(contribution))) %>%
+  ggplot() +
+  aes(x = contribution, y = word) +
+  facet_wrap(~binary, scales = "free") +
+  geom_point() +
+  geom_segment(
+    aes(yend = word, xend = 0)
+  ) +
+  geom_label(
+    #aes(x = contribution/2, label = word),
+    aes(x = 0, label = word,  hjust = ifelse(contribution > 0, 0, 1)),
+    fill = NA,
+    vjust = -0.1,
+    label.size = NA,
+    label.padding = unit(0.25, "lines"),
+    size = 3.5
+  ) +
+  theme_marx() +
+  theme(
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    axis.line.y = element_blank(),
+    axis.title = element_blank(),
+    axis.line.x = element_line(color = "grey50"),
+    axis.ticks.x = element_line("grey50"),
+    axis.text.x = element_text(size = 8, color = "grey50"),
+    strip.text = element_text(size = 12, face = "bold"),
+  ) +
+  labs(
+    title = "Sentiments in Capital",
+    subtitle = "Which words contributed the most to sentiment analysis?",
+    caption = "{marxmywords}"
+  )
+  
+
+```
+
+
+1.  Sentiments are ascribed to individual words. Words like "increase" and
+"fall" are associated with positive and negative sentiment, respectively, but
+should be considered in context. The phrase "an increase in exploitation" would 
+have a net neutral sentiment (plus one for increase, minus one for
+exploitation), whereas it doesn't take a particularly discerning reader to
+interpret that phrase as negative. More sophisticated algorithms than what I
+used here could address this shortcoming.
+
+2.  Sentiments are ascribed using popular interpretations of the word. For
+example, words like "money" are associated with positive sentiments. This isn't
+necessarily *wrong*, having money is better than having no money. But one of the
+key conclusions in *Capital* is that money inevitably arises from the
+circulation of commodities (a concept with negative sentiments in *Capital*).
+When Marx writes "circulation sweats money from every pore", money isn't being
+used positively; it's a gross by-product. If we were ascribing sentiment to the
+word "money" in the way it is used in *Capital*, a neutral or negative sentiment
+might be closer to the "intended" sentiment of the text.
+
+Perhaps the clearest example of differences between popular sentiment and
+Marxist sentiment is the word "capitalist", the third highest contributor to
+positive sentiment in *Capital*. Let's look at sentiments associated with
+similar words...
+
+```{r }
+nrc_pn %>%
+  filter(word %in% c("socialist", "communist", "capitalist")) %>%
+  knitr::kable()
+```
+
+Like with any crowd-sourced data sets, existing social biases are propagated in
+sentiment lexicons like the one used here. (A finding probably all too familiar
+to those who've run into issues with automated content moderation on social
+media sites.)
+
+# Conclusions
+
+Over the course of *Capital*, the sentiments expressed in the text become
+increasingly negative, consistent with Dante's journey through the circles of
+Hell. Similarly, anger, disgust, fear and sadness monotonically increased in
+intensity over the course of the book. While the approach here is fairly simple
+and is based on popular sentiments associated with words rather than
+context-specific sentiments, these findings lend support to the arguments
+presented in *Marx's Inferno*.
+
+> Like Dante's Virgil, Marx tells his charges to disregard social Hell's command
+— "Abandon ever hope, you who enter"  — ordering them instead to "abandon every
+suspicion." And, like the pilgrim in Dante's poem, the socialists who accept
+Marx's guidance are supposed to be so transformed by their journey that they
+will be able to withstand the purgatory through which the revolution was
+currently (and recurrently) travelling. (Roberts, 2017)
