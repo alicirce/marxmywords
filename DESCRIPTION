@@ -26,6 +26,7 @@ Suggests:
     tidytext,
     SnowballC,
     ggplot2,
+    rappdirs,
     ggtext,
     geomtextpath,
     ggforce,

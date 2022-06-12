@@ -176,7 +176,18 @@ custom_stop <- data.frame(
 stop_words <- stop_words %>%
   bind_rows(custom_stop)
 
-nrc <- get_sentiments("nrc") 
+require_automated_dl <- !interactive() && inherits(
+  try(textdata::lexicon_nrc(), silent = TRUE), "try-error"
+)
+
+if (require_automated_dl) {
+  dir <- rappdirs::user_cache_dir("textdata")
+  path <- file.path(dir, "nrc", "NRCWordEmotion.rds")
+  textdata:::download_nrc(dirname(path))
+  textdata:::process_nrc(dirname(path), path)
+}
+
+nrc <- textdata::lexicon_nrc()
 nrc_pn <- nrc %>%
   filter(sentiment %in% c("positive", "negative")) %>% 
   group_by(word) %>%
