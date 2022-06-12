@@ -155,7 +155,7 @@ included in the analysis, sentiments associated with money (i.e., the
 emotions anger, anticipation, joy, surprise and trust) reflected primarily the
 incidence of the word "money." 
 
-```{r stop_words_and_lexicon}
+```{r stop_words_and_lexicon, results='hide'}
 data(stop_words)
 
 stop_words <- stop_words %>%
@@ -178,7 +178,8 @@ stop_words <- stop_words %>%
 
 # For CI/pkgdown, need to download file manually
 require_automated_dl <- !interactive() && inherits(
-  try(textdata::lexicon_nrc(), silent = TRUE), "try-error"
+  try(textdata::lexicon_nrc(), silent = TRUE), 
+  "try-error"
 )
 
 if (require_automated_dl) {
