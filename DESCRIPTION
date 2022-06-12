@@ -29,6 +29,7 @@ Suggests:
     ggtext,
     geomtextpath,
     ggforce,
+    textdata,
     scales,
     igraph,
     ggraph
