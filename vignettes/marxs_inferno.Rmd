@@ -176,15 +176,21 @@ custom_stop <- data.frame(
 stop_words <- stop_words %>%
   bind_rows(custom_stop)
 
+
+# For CI/pkgdown, need to downlaod file manually
 require_automated_dl <- !interactive() && inherits(
   try(textdata::lexicon_nrc(), silent = TRUE), "try-error"
 )
 
 if (require_automated_dl) {
-  dir <- rappdirs::user_cache_dir("textdata")
-  path <- file.path(dir, "nrc", "NRCWordEmotion.rds")
+  data_dir <- "./data"
+  path <- file.path(data_dir, "nrc", "NRCWordEmotion.rds")
+  dir.create(dirname(path), recursive = TRUE, showWarnings = FALSE)
   textdata:::download_nrc(dirname(path))
   textdata:::process_nrc(dirname(path), path)
+  nrc <- textdata::lexicon_nrc(data_dir)
+} else {
+  nrc <- textdata::lexicon_nrc()
 }
 
 nrc <- textdata::lexicon_nrc()
