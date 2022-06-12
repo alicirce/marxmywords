@@ -1,8 +1,9 @@
 pandoc: 2.7.3
-pkgdown: 2.0.2
+pkgdown: 2.0.4
 pkgdown_sha: ~
 articles:
   capital_footnotes: capital_footnotes.html
   capital_word_frequencies: capital_word_frequencies.html
-last_built: 2022-04-09T02:59Z
+  marxs_inferno: marxs_inferno.html
+last_built: 2022-06-12T22:58Z
 
