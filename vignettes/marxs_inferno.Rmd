@@ -2,7 +2,7 @@
 title: "ML goes to Hell: Sentiment analysis supports the Marx's Inferno hypothesis"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Marxs Inferno}
+  %\VignetteIndexEntry{marxs_inferno}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -192,7 +192,6 @@ if (require_automated_dl) {
   nrc <- textdata::lexicon_nrc()
 }
 
-nrc <- textdata::lexicon_nrc()
 nrc_pn <- nrc %>%
   filter(sentiment %in% c("positive", "negative")) %>% 
   group_by(word) %>%
