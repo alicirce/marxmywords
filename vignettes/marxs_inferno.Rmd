@@ -21,6 +21,9 @@ knitr::opts_chunk$set(
 img {
   border: 0px;
 }
+p.caption {
+  font-size: 0.8em;
+}
 ```
 
 
@@ -65,13 +68,15 @@ custom_stop <- data.frame(
 )
 ```
 > At the entrance to science, as at the entrance to hell, the demand must be
-made: "Here you must abandon every suspicion; here must all your cowardice die."
-(1859 Preface, Marx, quoting Dante's Divine Comedy)
+made: "Here you must abandon every suspicion; here must all your cowardice 
+die."  
+  - 1859 Preface, Marx, quoting Dante's Divine Comedy
 
 > Capital is dead labour, that, vampire-like, only lives by sucking living
-labour, and lives the more, the more labour it sucks. (Capital Vol 1, Marx 1867)
+labour, and lives the more, the more labour it sucks.  
+  - Capital Vol 1, Marx 1867
 
-# Introduction
+## Introduction
 
 In *Capital*, Marx famously uses vivid metaphors, like monsters and vampires, to
 describe the uniquely exploitative nature of capital. But, what if the entire
@@ -122,7 +127,7 @@ offensive content. If *Capital* is patterned as a descent through Hell, we might
 expect the sentiment of the text to become increasingly negative. Let's test
 that hypothesis!
 
-# Methods
+## Methods
 
 I removed stop words from the main text of *Capital* (e.g., "the", "a", and
 other linker words) using the onix and snowball lexicons available through
@@ -224,9 +229,9 @@ marxs_inferno_tokenized <- capital_tokenized %>%
 
 ```
 
-# The Circles of Hell In Capital
+## The Circles of Hell In Capital
 
-```{r fig.height = 5, fig.width = 5}
+```{r fig.height = 5, fig.width = 5, fig.cap="Figure 1: Schematic illustrating similarities between Dante's Inferno and Capital.\n(Admittedly I just wanted an excuse to use geomtextpath)"}
 
 greys <- c("grey70", "grey54", "grey38", "grey22")
 
@@ -398,7 +403,109 @@ labouring classes confront capital in order to escape the social Hell. Instead
 of trying to create their own capital, the labourers must realize that capital
 is a wealth that betrays and turns against its creators. (Roberts, 2017)
 
-# Change in text positivity during the descent through hell
+## Positive and Negative Sentiments in Capital
+
+Leaving the positive and negative aspects of capitalism to Marx to explain, what
+words in *Capital* most contribute to positive or negative sentiment?
+
+```{r fig.height=3,fig.width=4,fig.cap="Figure 2: Fall contributes the most to negative sentiments, although it's my favourite season." }
+capital_tokenized %>%
+  left_join(nrc_pn, by = "word") %>%
+  filter(!is.na(sentiment)) %>%
+  group_by(stem, sentiment) %>%
+  tally() %>%
+  left_join(stem_word_map) %>%
+  ungroup() %>%
+  mutate(
+    contribution = sentiment * n,
+    binary = ifelse(
+      sentiment > 0, 
+      "most positive", 
+      "most negative"
+    )
+  ) %>%
+  group_by(binary) %>%
+  arrange(desc(abs(contribution))) %>%
+  slice(1:6) %>%
+  mutate(pos = row_number()) %>%
+  mutate(word = reorder(word, abs(contribution))) %>%
+  ggplot() +
+  aes(x = contribution, y = word) +
+  facet_wrap(~binary, scales = "free") +
+  geom_point() +
+  geom_segment(
+    aes(yend = word, xend = 0)
+  ) +
+  geom_label(
+    #aes(x = contribution/2, label = word),
+    aes(x = 0, label = word,  hjust = ifelse(contribution > 0, 0, 1)),
+    fill = NA,
+    vjust = -0.1,
+    label.size = NA,
+    label.padding = unit(0.25, "lines"),
+    size = 3.5
+  ) +
+  theme_marx() +
+  theme(
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    axis.line.y = element_blank(),
+    axis.title = element_blank(),
+    axis.line.x = element_line(color = "grey50"),
+    axis.ticks.x = element_line("grey50"),
+    axis.text.x = element_text(size = 8, color = "grey50"),
+    strip.text = element_text(size = 12, face = "bold"),
+  ) +
+  labs(
+    title = "Sentiments in Capital",
+    subtitle = "Which words contributed the most to sentiment analysis?"
+  )
+  
+
+```
+
+From this graph, a couple limitations of this approach are clear: 
+
+1.  *Sentiments are ascribed to individual words.* Words like "increase" and
+"fall" are associated with positive and negative sentiment, respectively, but
+should be considered in context. The phrase "an increase in exploitation" would 
+have a net neutral sentiment (plus one for increase, minus one for
+exploitation), whereas it doesn't take a particularly discerning reader to
+interpret that phrase as negative. I repeated the analysis with words like
+"increase", "decrease", "fall" and "rise" excluded, and trends remained the
+same. More sophisticated algorithms than what I used here could address this
+shortcoming, but this type of classification method is fairly common.
+
+2.  *Sentiments are ascribed using popular interpretations of the word*. For
+example, words like "money" are associated with positive sentiments. This isn't
+necessarily *wrong*, having money is better than having no money. But one of the
+key conclusions in *Capital* is that money inevitably arises from the
+circulation of commodities (a concept with negative sentiments in *Capital*).
+When Marx writes "circulation sweats money from every pore", money isn't being
+used positively; it's a gross by-product. If we were ascribing sentiment to the
+word "money" in the way it is used in *Capital*, a neutral or negative sentiment
+might be closer to the "intended" sentiment of the text.
+
+Perhaps the clearest example of differences between popular sentiment and
+Marxist sentiment is the word "capitalist", the third highest contributor to
+positive sentiment in *Capital*. Let's look at sentiments associated with
+similar words...
+
+```{r }
+nrc_pn %>%
+  filter(word %in% c("socialist", "communist", "capitalist")) %>%
+  knitr::kable()
+```
+
+Like with any crowd-sourced data sets, existing social biases are propagated in
+sentiment lexicons like the one used here. (A finding probably all too familiar
+to those who've run into issues with automated content moderation on social
+media sites.)
+
+Let's keep these limitations in mind as we test our original hypothesis: do the
+sentiments in *Capital* match a journey through Hell?
+
+## Change in text positivity during the descent through hell
 
 In Styx, we encounter sins of incontinence, and Marx presents value theory,
 exchange and money. This hell is associated with the most positive sentiments.
@@ -411,7 +518,7 @@ the ninth circle of hell and study the treachery of primitive accumulation. This
 relationship is statistically significant, for those who care about those sorts
 of things (p = 0.0002).
 
-```{r fig.height=4.5, fig.width=6}
+```{r fig.height=4.5, fig.width=6, fig.cap="Figure 3: Chapter 10 made me feel absolutely miserable. It's nice when data validates my emotions."}
 capital_sentiment <- marxs_inferno_tokenized %>%
   left_join(nrc_pn, by = "word") %>%
   filter(!is.na(sentiment)) 
@@ -502,8 +609,7 @@ sentiments_by_chapter %>%
   ) +
   labs(
     title = "Marx's Inferno: sentiments in Capital",
-    subtitle = "Sentiments expressed become more negative descending through the circles of hell",
-    caption = "{marxmywords}"
+    subtitle = "Sentiments expressed become more negative descending through the circles of hell"
   ) +
   scale_y_continuous()
 
@@ -514,7 +620,7 @@ sentiments_by_chapter %>%
 by_chapter <- lm(sentiment ~ chapter, sentiments_by_chapter)
 ```
 
-# Change in sentiments by hell
+## Change in sentiments by hell
 
 In addition to positive/negative, the NRC sentiment lexicon also associates
 words with one or more of eight emotions: anger, anticipation, disgust, fear,
@@ -524,7 +630,7 @@ the unique characteristics of each hell, we might also expect higher surprise
 and a loss of trust during the last two circles, which deal with fraud and
 betrayal.
 
-```{r fig.height = 3, fig.width = 4}
+```{r fig.height = 3, fig.width = 4, fig.cap="Figure 4: Change in sentiment across Hell for all 8 sentiments in the NRC data set (excluding positive/negative)."}
 
 marxs_inferno_tokenized %>%
   left_join(nrc_other, by = "word") %>%
@@ -567,8 +673,7 @@ marxs_inferno_tokenized %>%
   ) +
   labs(
     title = "Marx's Inferno",
-    subtitle = "Sentiment in Capital by circle of hell\n",
-    caption = "{marxmywords}"
+    subtitle = "Sentiment in Capital by circle of Hell\n"
   )
   
 ```
@@ -588,107 +693,7 @@ was too much to demand this level of emotional granularity in the text. After
 all, capital's betrayal of workers was not a particularly radical or unexpected
 claim to make even in 1867.
 
-
-# Limitations
-
-In this analysis, I linked sentiments to individual words rather than looking at
-the context in which the word was used. The graph below will, I think,
-immediately make it evident what some of the issues with this approach were.
-
-
-```{r fig.height=3,fig.width=4}
-capital_tokenized %>%
-  left_join(nrc_pn, by = "word") %>%
-  filter(!is.na(sentiment)) %>%
-  group_by(stem, sentiment) %>%
-  tally() %>%
-  left_join(stem_word_map) %>%
-  ungroup() %>%
-  mutate(
-    contribution = sentiment * n,
-    binary = ifelse(
-      sentiment > 0, 
-      "most positive", 
-      "most negative"
-    )
-  ) %>%
-  group_by(binary) %>%
-  arrange(desc(abs(contribution))) %>%
-  slice(1:6) %>%
-  mutate(pos = row_number()) %>%
-  mutate(word = reorder(word, abs(contribution))) %>%
-  ggplot() +
-  aes(x = contribution, y = word) +
-  facet_wrap(~binary, scales = "free") +
-  geom_point() +
-  geom_segment(
-    aes(yend = word, xend = 0)
-  ) +
-  geom_label(
-    #aes(x = contribution/2, label = word),
-    aes(x = 0, label = word,  hjust = ifelse(contribution > 0, 0, 1)),
-    fill = NA,
-    vjust = -0.1,
-    label.size = NA,
-    label.padding = unit(0.25, "lines"),
-    size = 3.5
-  ) +
-  theme_marx() +
-  theme(
-    axis.text.y = element_blank(),
-    axis.ticks.y = element_blank(),
-    axis.line.y = element_blank(),
-    axis.title = element_blank(),
-    axis.line.x = element_line(color = "grey50"),
-    axis.ticks.x = element_line("grey50"),
-    axis.text.x = element_text(size = 8, color = "grey50"),
-    strip.text = element_text(size = 12, face = "bold"),
-  ) +
-  labs(
-    title = "Sentiments in Capital",
-    subtitle = "Which words contributed the most to sentiment analysis?",
-    caption = "{marxmywords}"
-  )
-  
-
-```
-
-
-1.  Sentiments are ascribed to individual words. Words like "increase" and
-"fall" are associated with positive and negative sentiment, respectively, but
-should be considered in context. The phrase "an increase in exploitation" would 
-have a net neutral sentiment (plus one for increase, minus one for
-exploitation), whereas it doesn't take a particularly discerning reader to
-interpret that phrase as negative. More sophisticated algorithms than what I
-used here could address this shortcoming.
-
-2.  Sentiments are ascribed using popular interpretations of the word. For
-example, words like "money" are associated with positive sentiments. This isn't
-necessarily *wrong*, having money is better than having no money. But one of the
-key conclusions in *Capital* is that money inevitably arises from the
-circulation of commodities (a concept with negative sentiments in *Capital*).
-When Marx writes "circulation sweats money from every pore", money isn't being
-used positively; it's a gross by-product. If we were ascribing sentiment to the
-word "money" in the way it is used in *Capital*, a neutral or negative sentiment
-might be closer to the "intended" sentiment of the text.
-
-Perhaps the clearest example of differences between popular sentiment and
-Marxist sentiment is the word "capitalist", the third highest contributor to
-positive sentiment in *Capital*. Let's look at sentiments associated with
-similar words...
-
-```{r }
-nrc_pn %>%
-  filter(word %in% c("socialist", "communist", "capitalist")) %>%
-  knitr::kable()
-```
-
-Like with any crowd-sourced data sets, existing social biases are propagated in
-sentiment lexicons like the one used here. (A finding probably all too familiar
-to those who've run into issues with automated content moderation on social
-media sites.)
-
-# Conclusions
+## Conclusions
 
 Over the course of *Capital*, the sentiments expressed in the text become
 increasingly negative, consistent with Dante's journey through the circles of
@@ -703,4 +708,11 @@ presented in *Marx's Inferno*.
 suspicion." And, like the pilgrim in Dante's poem, the socialists who accept
 Marx's guidance are supposed to be so transformed by their journey that they
 will be able to withstand the purgatory through which the revolution was
-currently (and recurrently) travelling. (Roberts, 2017)
+currently (and recurrently) travelling.  
+ - Roberts, 2017
+
+> [My Guide] first, I second, still ascending held  
+  Our way until the fair celestial train  
+  Was through an opening round to me revealed:  
+  And, issuing thence, we saw the stars again.  
+  - Dante's Inferno, 14th century

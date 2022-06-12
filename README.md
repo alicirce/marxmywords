@@ -10,7 +10,7 @@ available for text analysis in R!
 You can install the development version of marxmywords like so:
 
 ``` r
-devtools::install("alicirce/marxmywords")
+devtools::install_github("alicirce/marxmywords")
 ```
 
 ## Example

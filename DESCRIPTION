@@ -27,6 +27,8 @@ Suggests:
     SnowballC,
     ggplot2,
     ggtext,
+    geomtextpath,
+    ggforce,
     scales,
     igraph,
     ggraph
