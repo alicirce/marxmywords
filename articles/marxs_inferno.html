@@ -102,29 +102,6 @@ p.caption {
 </h2>
 <p>I removed stop words from the main text of <em>Capital</em> (e.g., “the”, “a”, and other linker words) using the onix and snowball lexicons available through <a href="https://github.com/juliasilge/tidytext" class="external-link">tidytext</a>. I tokenized the text into individual words, extracted the word stem (i.e., made it so that words like “worship” and “worships” were treated identically) and then ascribed one or more sentiments to a word-stem using the <a href="https://onlinelibrary.wiley.com/doi/10.1111/j.1467-8640.2012.00460.x" class="external-link">NRC lexicon</a>. This lexicon was developed through crowd-sourcing (via Mechanical Turk) relationships between words and emotions, and has been widely used (&gt;1800 citations on Google Scholar). I selected this lexicon because, of the four lexicons available in the <a href="https://github.com/juliasilge/tidytext" class="external-link">tidytext</a> package, the NRC lexicon mapped to the highest proportion of words. However, the same analysis conducted with the Bing, AFINN and Loughran lexicons recapitulated the trends shown here.</p>
 <p>For the positivity/negativity analysis, positive words were assigned a value of 1 and negative words were assigned a value of -1. Net sentiments were calculated and normalized to the total number of words matched with a sentiment. I excluded words from consideration if they were considered both positive and negative, or if no sentiment could be ascribed. For the assessment of other sentiments, the sum of words across each sentiment was normalized to the word count in each hell, and then normalized to the sentiment value of the first circle of Hell (for clearer data visualization). I excluded the word “money” from this analysis since it occurs with very high frequency; with “money” included in the analysis, sentiments associated with money (i.e., the emotions anger, anticipation, joy, surprise and trust) reflected primarily the incidence of the word “money.”</p>
-<pre><code><span class="co">## Do you want to download:</span>
-<span class="co">##  Name: NRC Word-Emotion Association Lexicon </span>
-<span class="co">##  URL: http://saifmohammad.com/WebPages/lexicons.html </span>
-<span class="co">##  License: License required for commercial use. Please contact Saif M. Mohammad (saif.mohammad@nrc-cnrc.gc.ca). </span>
-<span class="co">##  Size: 22.8 MB (cleaned 424 KB) </span>
-<span class="co">##  Download mechanism: http </span>
-<span class="co">##  Citation info:</span>
-<span class="co">## </span>
-<span class="co">## This dataset was published in Saif M. Mohammad and Peter Turney. (2013), ``Crowdsourcing a Word-Emotion Association Lexicon.'' Computational Intelligence, 29(3): 436-465.</span>
-<span class="co">## </span>
-<span class="co">## article{mohammad13,</span>
-<span class="co">## author = {Mohammad, Saif M. and Turney, Peter D.},</span>
-<span class="co">## title = {Crowdsourcing a Word-Emotion Association Lexicon},</span>
-<span class="co">## journal = {Computational Intelligence},</span>
-<span class="co">## volume = {29},</span>
-<span class="co">## number = {3},</span>
-<span class="co">## pages = {436-465},</span>
-<span class="co">## doi = {10.1111/j.1467-8640.2012.00460.x},</span>
-<span class="co">## url = {https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1467-8640.2012.00460.x},</span>
-<span class="co">## eprint = {https://onlinelibrary.wiley.com/doi/pdf/10.1111/j.1467-8640.2012.00460.x},</span>
-<span class="co">## year = {2013}</span>
-<span class="co">## }</span>
-<span class="co">## If you use this lexicon, then please cite it.</span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="the-circles-of-hell-in-capital">The Circles of Hell In Capital<a class="anchor" aria-label="anchor" href="#the-circles-of-hell-in-capital"></a>
