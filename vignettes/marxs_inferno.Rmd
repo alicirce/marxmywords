@@ -1,8 +1,8 @@
 ---
-title: "Social Hell"
+title: "ML goes to Hell: Sentiment analysis supports the Marx's Inferno hypothesis"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Social Hell}
+  %\VignetteIndexEntry{Marxs Inferno}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{css, echo = FALSE}
+```{css}
 img {
   border: 0px;
 }
@@ -27,7 +27,7 @@ p.caption {
 ```
 
 
-```{r setup, echo=FALSE}
+```{r setup}
 library(marxmywords)
 library(dplyr)
 library(tidyr)
@@ -82,7 +82,7 @@ In *Capital*, Marx famously uses vivid metaphors, like monsters and vampires, to
 describe the uniquely exploitative nature of capital. But, what if the entire
 organization of the book was itself an infernal metaphor?
 
-William Clare Roberts wrote a book, *Marxs Inferno*, that argues that Marx
+William Clare Roberts wrote a book, *Marxs Inferno* (2017), that argues that Marx
 structured his argument in *Capital* along the literary framework of Dante's
 *Inferno* — yes, the 14th century poem about a guy traveling through Hell.
 (*Marx's Inferno* argues a few other things, like that *Capital* should be read
@@ -155,7 +155,7 @@ included in the analysis, sentiments associated with money (i.e., the
 emotions anger, anticipation, joy, surprise and trust) reflected primarily the
 incidence of the word "money." 
 
-```{r stop_words, echo=FALSE}
+```{r stop_words_and_lexicon}
 data(stop_words)
 
 stop_words <- stop_words %>%
@@ -176,8 +176,7 @@ custom_stop <- data.frame(
 stop_words <- stop_words %>%
   bind_rows(custom_stop)
 
-
-# For CI/pkgdown, need to downlaod file manually
+# For CI/pkgdown, need to download file manually
 require_automated_dl <- !interactive() && inherits(
   try(textdata::lexicon_nrc(), silent = TRUE), "try-error"
 )
@@ -204,7 +203,7 @@ nrc_other <- nrc %>%
 
 ```
 
-```{r echo=FALSE}
+```{r tokenize_capital}
 capital_main <- capital_vol1 %>%
   filter(section == "body") %>% 
   # handle some annoying common cases not handled well by tokenization tools
@@ -229,10 +228,6 @@ stem_word_map <- capital_tokenized %>%
   slice(which.max(n)) %>%
   select(-n)
 
-
-```
-
-```{r}
 marxs_inferno <- data.frame(
   part = 1:8,
   hell = c("Styx", rep("Dis", 2), rep("Malebolge", 4), "Cocytus")
@@ -248,7 +243,7 @@ marxs_inferno_tokenized <- capital_tokenized %>%
 
 ## The Circles of Hell In Capital
 
-```{r fig.height = 5, fig.width = 5, fig.cap="Figure 1: Schematic illustrating similarities between Dante's Inferno and Capital.\n(Admittedly I just wanted an excuse to use geomtextpath)"}
+```{r figure_1, fig.height = 5, fig.width = 5, fig.cap="Figure 1: Similarities between Dante's Inferno and Capital. (Admittedly I just wanted an excuse to use geomtextpath)"}
 
 greys <- c("grey70", "grey54", "grey38", "grey22")
 
@@ -405,10 +400,13 @@ is a wealth that betrays and turns against its creators. (Roberts, 2017)
 Leaving the positive and negative aspects of capitalism to Marx to explain, what
 words in *Capital* most contribute to positive or negative sentiment?
 
-```{r fig.height=3,fig.width=4,fig.cap="Figure 2: Fall contributes the most to negative sentiments, although it's my favourite season." }
-capital_tokenized %>%
+```{r figure_2, fig.height=3,fig.width=4,fig.cap="Figure 2: Fall contributes the most to negative sentiments, although it's my favourite season." }
+
+capital_sentiment <- marxs_inferno_tokenized %>%
   left_join(nrc_pn, by = "word") %>%
-  filter(!is.na(sentiment)) %>%
+  filter(!is.na(sentiment)) 
+
+capital_sentiment %>%
   group_by(stem, sentiment) %>%
   tally() %>%
   left_join(stem_word_map) %>%
@@ -488,7 +486,7 @@ Marxist sentiment is the word "capitalist", the third highest contributor to
 positive sentiment in *Capital*. Let's look at sentiments associated with
 similar words...
 
-```{r }
+```{r table_1}
 nrc_pn %>%
   filter(word %in% c("socialist", "communist", "capitalist")) %>%
   knitr::kable()
@@ -515,11 +513,7 @@ the ninth circle of hell and study the treachery of primitive accumulation. This
 relationship is statistically significant, for those who care about those sorts
 of things (p = 0.0002).
 
-```{r fig.height=4.5, fig.width=6, fig.cap="Figure 3: Chapter 10 made me feel absolutely miserable. It's nice when data validates my emotions."}
-capital_sentiment <- marxs_inferno_tokenized %>%
-  left_join(nrc_pn, by = "word") %>%
-  filter(!is.na(sentiment)) 
-
+```{r figure_3, fig.height=4.5, fig.width=6, fig.cap="Figure 3: Chapter 10 made me feel absolutely miserable. It's nice when data validates my emotions."}
 sentiments_by_chapter <- capital_sentiment %>%
   group_by(hell, chapter) %>%
   summarize(
@@ -613,6 +607,7 @@ sentiments_by_chapter %>%
 
 
 ```
+
 ```{r linear_model}
 by_chapter <- lm(sentiment ~ chapter, sentiments_by_chapter)
 ```
@@ -627,7 +622,7 @@ the unique characteristics of each hell, we might also expect higher surprise
 and a loss of trust during the last two circles, which deal with fraud and
 betrayal.
 
-```{r fig.height = 3, fig.width = 4, fig.cap="Figure 4: Change in sentiment across Hell for all 8 sentiments in the NRC data set (excluding positive/negative)."}
+```{r figure_4, fig.height = 3, fig.width = 4, fig.cap="Figure 4: Change in sentiment across Hell for all 8 sentiments in the NRC data set (excluding positive/negative)."}
 
 marxs_inferno_tokenized %>%
   left_join(nrc_other, by = "word") %>%
