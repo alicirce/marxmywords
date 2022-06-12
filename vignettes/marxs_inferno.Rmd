@@ -350,26 +350,6 @@ Before we get into the results, let's quickly recap Roberts' argument for the
 similarities between *Capital* and *Inferno*. Roberts breaks both texts into
 four sections, as summarized in the figure above.
 
-```{r eval = FALSE}
-
-fig1$subject <- c(
-  "commondity fetishism",
-  "capitalist exploitation",
-  "the capitalist mode of production",
-  "primitive accumulation"
-)
-fig1$description <- c(
-  "The impersonal domination of market-based societies allows for free movement of capital and products rather than control of capital/products by its producers.",
-  "The relationship between capitalists and their workers is inherently one of force, as the boss controls and uses the workers to extract as much surplus value as possible from the labour power sold by the labourer.",
-  "While capitalism may promise improved productivity in the form of mechanization, co-operation, division of labour and other efficiencies of scale, it delivers little of these gains to the workers but instead produces alienation and miserable working conditions.",
-  "Betrayals presented here include (a) the expropriation of land from the peasants in violation of the mutual obligation between serfs and their lords, (b) the betrayal of the aristocrats in their new-found wealth by capital as the capitalists/bourgeoisie are freed by the abolition of feudalism, (c) the treachery of the state, acting as the agent of capital to do its 'dirty' work, and (d) that workers attempting to wield capitalism for their own benefit will inevitably find themselves betrayed by the nature of capital."
-)
-
-fig1 %>%
-  select(hell, circles, sins, chapters, subject, description) %>%
-  knitr::kable()
-```
-
 1. **Styx** (circles 1-5, chapters 1-3):
 *Sins of incontinence; commodity fetishism*.  
 The impersonal domination of market-based societies allows for free movement of
