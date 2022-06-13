@@ -704,9 +704,15 @@ presented in *Marx's Inferno*.
 
 While putting together this analysis, I grew a little disillusioned with
 available sentiment lexicon tools (see above: Malebolge, capitalism promises
-good and delivers evil). To advance the field of "Marxist Data Science", it
-would be interesting to create a new lexicon, one in which "money" is coded
-negative or neutral while "communist" and "socialist" are coded positive.
+good and delivers evil). Tools like this facilitate extracting information from
+news article, tweets, or even classic Marxist-Leninist texts, but reproduce
+existing societal biases and hard-code in capitalist values. Presumably a
+sentiment lexicon crowd-sourced from socialists would associate positive
+sentiments with "communist" and "socialist". How would words like "money" or
+"commodity" be coded? Creating a new sentiment lexicon could provide insight
+into how the community uses terms from the Marxist lexicon, but could also
+reduce bias in sentiment analysis in other applications of data science to 
+socialist topics.
 
 > Like Dante's Virgil, Marx tells his charges to disregard social Hell's command
 — "Abandon ever hope, you who enter"  — ordering them instead to "abandon every
