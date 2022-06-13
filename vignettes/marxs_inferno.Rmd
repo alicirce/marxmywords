@@ -49,7 +49,8 @@ theme_marx <- function() {
         face = "bold", 
         hjust = 0
       ),
-      plot.subtitle = element_text(size = 8.5, color = "grey30", hjust = 0)
+      plot.subtitle = element_text(size = 8.5, color = "grey30", hjust = 0),
+      plot.background = element_rect(fill = "white", color = NA)
     )
 }
 
@@ -82,14 +83,16 @@ In *Capital*, Marx famously uses vivid metaphors, like monsters and vampires, to
 describe the uniquely exploitative nature of capital. But, what if the entire
 organization of the book was itself an infernal metaphor?
 
-William Clare Roberts wrote a book, *Marxs Inferno* (2017), that argues that Marx
-structured his argument in *Capital* along the literary framework of Dante's
-*Inferno* — yes, the 14th century poem about a guy traveling through Hell.
-(*Marx's Inferno* argues a few other things, like that *Capital* should be read
-as an answer to contemporary socialist debates, but this part about the Divine
-Comedy is its ["weirdest and most ambitious
-claim"](https://redsails.org/losurdo-and-roberts/) and the one I'll focus on
-here.) 
+William Clare Roberts wrote a book, 
+[*Marxs Inferno*](https://press.princeton.edu/books/paperback/9780691180816/marxs-inferno) 
+(2017), that argues that Marx structured his argument in *Capital* along the 
+literary framework of Dante's *Inferno* — yes, the 
+[14th century poem](https://www.gutenberg.org/files/41537/41537-h/41537-h.htm) 
+about a guy traveling through Hell. (*Marx's Inferno* argues a few other things,
+like that *Capital* should be read as an answer to contemporary socialist
+debates, but this part about the Divine Comedy is its ["weirdest and most
+ambitious claim"](https://redsails.org/losurdo-and-roberts/) and the one I'll
+focus on here.)
 
 In *Inferno*, Dante is guided by the ancient poet Virgil through the nine
 circles of Hell. At the center of Hell, they encounter Satan devouring Judas and
@@ -100,25 +103,25 @@ the lower recesses of the capitalist economic order in order that they might
 learn not only how this 'infernal machine' works, but also what traps to avoid
 in their efforts to construct a new world."
 
-Like comparing capital to a vampire draining the life force of labourers
+Just as comparing capital to a vampire draining the life force of labourers
 communicates capital's unbounded parasitism, building *Capital* as an allusion
 to Dante's *Inferno* helps communicate a few complex ideas. Marx's opponents
 were divided between those preoccupied with the moralistic questions of
 socialism who wished to avoid political economy and those who wished to stay
 firmly within classical political economy. In this literary allusion, we
-encounter moral failures (incontinence, violence, fraud, treachery), but Marx
-instead rejects this moralistic framework, arguing that "it is capital, as a
-system of all-around domination, that is responsible for these evils, not the
-individuals dominated by capital." In comparing the proletariat with Dante, Marx
-"emphasizes the necessity of going *through* political economy in order to get
-*beyond* it", of confronting Satan/capital in order to escape their Hell
-(Roberts, 2017).
+encounter moral failures (incontinence, violence, fraud, treachery), but Marx 
+rejects this moralistic framework. Rather than the exploitation of labourers
+occurring by the greed and malevolence of individual capitalists, it is capital
+itself that inherently, impersonally, leads to exploitation. Secondly, by
+comparing the proletariat with Dante, Marx "emphasizes the necessity of going
+*through* political economy in order to get *beyond* it", of confronting
+Satan/capital in order to escape their Hell (Roberts, 2017).
 
-I'll leave it to Roberts to defend how fond of Dante Marx was, how often Marx
-structured his other writings around literary works, and how clues from the
-drafting process suggest an intent to make his book *more* like *Inferno*. But
-is there support for this theory, of a descent through Hell, in the choice of
-language used?
+Roberts supports his reading of *Capital* by presenting how fond of Dante Marx
+was, how often Marx structured his other writings around literary works, and how
+clues from the drafting process suggest an intent to make his book *more* like
+*Inferno*. But is there support for this theory, of a descent through Hell, in
+the choice of language used?
 
 Sentiment analysis is a type of natural language processing (NLP) method that
 attempts to understand the emotions and other subjective information in text.
@@ -135,12 +138,13 @@ other linker words) using the onix and snowball lexicons available through
 stem (i.e., made it so that words like "worship" and "worships" were treated
 identically) and then ascribed one or more sentiments to a word-stem using the
 [NRC lexicon](https://onlinelibrary.wiley.com/doi/10.1111/j.1467-8640.2012.00460.x).
-This lexicon was developed through crowd-sourcing (via Mechanical Turk)
-relationships between words and emotions, and has been widely used (>1800
-citations on Google Scholar). I selected this lexicon because, of the four
-lexicons available in the `{tidytext}` package, the NRC lexicon mapped to the
-highest proportion of words. However, the same analysis conducted with the Bing,
-AFINN and Loughran lexicons recapitulated the trends shown here.
+This lexicon was developed through crowd-sourcing relationships between words 
+and emotions (via Amazon's
+[Mechanical Turk](https://www.vox.com/2016/7/11/12148646/amazon-mechanical-turk-college-millennials-minimum-wage)), and has been widely used 
+([>1800 citations on Google Scholar](https://scholar.google.com/citations?view_op=view_citation&hl=en&user=zJHymXh9EVwC&citation_for_view=zJHymXh9EVwC:Se3iqnhoufwC)). I selected this lexicon because, of the 
+four lexicons available in the `{tidytext}` package, the NRC lexicon mapped to
+the highest proportion of words. However, the same analysis conducted with the
+Bing, AFINN and Loughran lexicons recapitulated the trends shown here.
 
 For the positivity/negativity analysis, positive words were assigned a value of
 1 and negative words were assigned a value of -1. Net sentiments were calculated
@@ -353,7 +357,8 @@ radiuses %>%
     legend.position = "none",
     plot.title = element_text(size = 10, color = "#f20707", face = "bold"),
     plot.subtitle = element_text(size = 9, color = "grey30"),
-    plot.caption = element_text(color = "grey50", hjust = 1, size = 6)
+    plot.caption = element_text(color = "grey50", hjust = 1, size = 6),
+    plot.background = element_rect(fill = "white", color = NA)
   ) 
 
 ```
@@ -371,18 +376,18 @@ capital and products rather than control of capital/products by its producers.
    The relationship between capitalists and their workers is inherently one of
 *force*, as the boss controls and uses the workers to extract as much surplus
 value as possible from the labour power sold by the labourer.
-3. **Malebolge** (8th circle of hell, chapters 12-25): 
+3. **Malebolge** (8th circle of Hell, chapters 12-25): 
 *Sins of fraud; the capitalist mode of production.*  
    While capitalism may promise improved productivity in the form of 
 mechanization, co-operation, division of labour and other efficiencies of scale,
 it delivers little of these gains to the workers but instead produces alienation
 and miserable working conditions.
-4. **Cocytus** (9th circle of hell, chapters 26-33): 
+4. **Cocytus** (9th circle of Hell, chapters 26-33): 
 *Sins of treachery; primitive accumulation*.  
    Betrayals presented here include: (a) the expropriation of land from the
 peasants in violation of the mutual obligation between serfs and their lords,
-(b) the betrayal of the aristocrats in their new-found wealth by capital as the
-capitalists/bourgeoisie are freed by the abolition of feudalism, (c) the
+(b) the betrayal of the aristocrats in their new-found wealth by capital as 
+the capitalists/bourgeoisie are freed by the abolition of feudalism, (c) the
 treachery of the state, acting as the agent of capital to do its "dirty" work,
 and (d) that workers attempting to wield capitalism for their own benefit will
 inevitably find themselves betrayed by the nature of capital.
@@ -397,10 +402,11 @@ is a wealth that betrays and turns against its creators. (Roberts, 2017)
 
 ## Positive and Negative Sentiments in Capital
 
-Leaving the positive and negative aspects of capitalism to Marx to explain, what
-words in *Capital* most contribute to positive or negative sentiment?
+Marx explains the positive and negative aspects of capitalism in *Capital*.
+Which words most contribute to the positive and negative *sentiments* in
+*Capital*?
 
-```{r figure_2, fig.height=3,fig.width=4,fig.cap="Figure 2: Fall contributes the most to negative sentiments, although it's my favourite season." }
+```{r figure_2, fig.height=3,fig.width=4,fig.cap="Figure 2: 'Fall' contributes the most to negative sentiments, although it's my favourite season." }
 
 capital_sentiment <- marxs_inferno_tokenized %>%
   left_join(nrc_pn, by = "word") %>%
@@ -500,16 +506,16 @@ media sites.)
 Let's keep these limitations in mind as we test our original hypothesis: do the
 sentiments in *Capital* match a journey through Hell?
 
-## Change in text positivity during the descent through hell
+## Change in Sentiment During the Descent Through Hell
 
 In Styx, we encounter sins of incontinence, and Marx presents value theory,
-exchange and money. This hell is associated with the most positive sentiments.
+exchange and money. This Hell is associated with the most positive sentiments.
 From there, we decline in positivity into Dis and Malebolge. These circles of
-hell are marked in particular by the very negative chapters 10, 15 and 25 — the
+Hell are marked in particular by the very negative chapters 10, 15 and 25 — the
 "historical" chapters that describe in detail the terrible living and working
 conditions of British workers in the 19th century and the legal battles for
 labour rights. We then encounter a massive drop in positivity as we descend into
-the ninth circle of hell and study the treachery of primitive accumulation. This
+the ninth circle of Hell and study the treachery of primitive accumulation. This
 relationship is statistically significant, for those who care about those sorts
 of things (p = 0.0002).
 
@@ -599,8 +605,8 @@ sentiments_by_chapter %>%
     axis.title = element_blank()
   ) +
   labs(
-    title = "Marx's Inferno: sentiments in Capital",
-    subtitle = "Sentiments expressed become more negative descending through the circles of hell"
+    title = "Marx's Inferno: Sentiments in Capital",
+    subtitle = "Sentiments expressed become more negative descending through the circles of Hell"
   ) +
   scale_y_continuous()
 
@@ -612,7 +618,7 @@ sentiments_by_chapter %>%
 by_chapter <- lm(sentiment ~ chapter, sentiments_by_chapter)
 ```
 
-## Change in sentiments by hell
+## Change in Sentiments by Hell
 
 In addition to positive/negative, the NRC sentiment lexicon also associates
 words with one or more of eight emotions: anger, anticipation, disgust, fear,
@@ -658,6 +664,7 @@ marxs_inferno_tokenized %>%
     axis.title = element_blank(),
     panel.spacing.y = unit(1, "lines"),
     panel.grid.major.y = element_line(color = "grey90"),
+    plot.background = element_rect(fill = "white", color = NA),
     plot.title = element_text(size = 10, color = "#f20707", face = "bold"),
     plot.subtitle = element_text(size = 9, color = "grey30"),
     plot.caption = element_text(color = "grey50", hjust = 1, size = 6),
@@ -693,7 +700,13 @@ Hell. Similarly, anger, disgust, fear and sadness monotonically increased in
 intensity over the course of the book. While the approach here is fairly simple
 and is based on popular sentiments associated with words rather than
 context-specific sentiments, these findings lend support to the arguments
-presented in *Marx's Inferno*.
+presented in *Marx's Inferno*. 
+
+While putting together this analysis, I grew a little disillusioned with
+available sentiment lexicon tools (see above: Malebolge, capitalism promises
+good and delivers evil). To advance the field of "Marxist Data Science", it
+would be interesting to create a new lexicon, one in which "money" is coded
+negative or neutral while "communist" and "socialist" are coded positive.
 
 > Like Dante's Virgil, Marx tells his charges to disregard social Hell's command
 — "Abandon ever hope, you who enter"  — ordering them instead to "abandon every
