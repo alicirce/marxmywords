@@ -704,7 +704,7 @@ presented in *Marx's Inferno*.
 
 While putting together this analysis, I grew a little disillusioned with
 available sentiment lexicon tools (see above: Malebolge, capitalism promises
-good and delivers evil). Tools like this facilitate extracting information from
+good and delivers evil). Tools like these facilitate extracting information from
 news article, tweets, or even classic Marxist-Leninist texts, but reproduce
 existing societal biases and hard-code in capitalist values. Presumably a
 sentiment lexicon crowd-sourced from socialists would associate positive
