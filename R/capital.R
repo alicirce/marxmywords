@@ -27,6 +27,62 @@
 #' @source \url{https://www.marxists.org/archive/marx/works/1867-c1/}
 "capital_vol1"
 
+#' Capital, Volume II (1885)
+#'
+#' This volume of Capital was written by Marx in 1863-1878, and edited by Engels
+#' for publication in 1885. This version of Capital was taken from the
+#' Marx/Engels Internet Archive (marxists.org), and is based on the revised
+#' second edition (1893).
+#'
+#' The text is stored as a data frame with four columns. The main text is
+#' included in the "body" section. Note that the footnote numbering re-starts at
+#' the beginning of each chapter.
+#'
+#' @format A data frame, containing four columns:
+#' \describe{
+#'   \item{section}{
+#'     Section of book, one of:
+#'       "toc" (Table of Contents),
+#'       "body" (main text),
+#'       "footnotes" (footnotes),
+#'      "credits" (list of transcribers and HTML markup contributors)
+#'     }
+#'   \item{part}{Part of text; the main text is divided into 8 parts}
+#'   \item{chapter}{Chapter of text: the main text is divided into 33 chapters}
+#'   \item{text}{Text, usually about one paragraph or footnote per row. (This
+#'     depends on how the HTML markup was done.)}
+#' }
+#' @source \url{https://www.marxists.org/archive/marx/works/1867-c1/}
+"capital_vol2"
+
+#' Capital, Volume III (1894)
+#'
+#' This volume of Capital was assembled from notes written by Marx between
+#' 1863-1883 by Engels, and was first published in 1894. This version was taken
+#' from the Marx/Engels Internet Archive (marxists.org), which was based on the
+#' 1959 Edition from the Institute of Marxism-Leninism of the USSR.
+#'
+#' The text is stored as a data frame with four columns. The main text is
+#' included in the "body" section. Note that the footnote numbering re-starts at
+#' the beginning of each chapter.
+#'
+#' @format A data frame, containing four columns:
+#' \describe{
+#'   \item{section}{
+#'     Section of book, one of:
+#'       "toc" (Table of Contents),
+#'       "body" (main text),
+#'       "footnotes" (footnotes),
+#'      "credits" (list of transcribers and HTML markup contributors)
+#'     }
+#'   \item{part}{Part of text; the main text is divided into 8 parts}
+#'   \item{chapter}{Chapter of text: the main text is divided into 33 chapters}
+#'   \item{text}{Text, usually about one paragraph or footnote per row. (This
+#'     depends on how the HTML markup was done.)}
+#' }
+#' @source \url{https://www.marxists.org/archive/marx/works/1867-c1/}
+"capital_vol3"
+
 #' Combine Capital Vol I components into a single character vector
 #'
 #' The data provided in this package separates out the components of the
